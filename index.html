@@ -1,11 +1,18 @@
-<html>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Educational AR Experience</title>
 
-    <!-- Mobile Console (vConsole) -->
+    <!-- Google Fonts for Professional Look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <!-- Mobile Console (Keep this for debugging) -->
     <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
     <script>
-      // Initialize the console immediately
       var vConsole = new VConsole();
     </script>
 
@@ -20,69 +27,263 @@
       }
     }
     </script>
-
-    <!-- Main Logic -->
     <script src="lib/main.js" type="module"></script>
 
     <style>
-      body {
-        margin: 0;
-      }
+        :root {
+            --primary-color: #6366f1; /* Modern Indigo */
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+        }
 
-      #container {
-        width: 100vw;
-        height: 100vh;
-        position: relative;
-        overflow: hidden;
-      }
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            background-color: #0f172a; /* Dark background behind AR */
+        }
 
-      #control {
-        position: absolute;
-        top: 20px;                   /* Moved down slightly */
-        left: 50%;                   /* Center horizontally */
-        transform: translateX(-50%); /* Center alignment fix */
-        z-index: 10;
-        display: flex;               /* Puts buttons side by side */
-        gap: 15px;                   /* Space between buttons */
-      }
+        /* The AR Container */
+        #container {
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
 
-      /* BUTTON STYLING */
-      button {
-        font-size: 1.5rem;           /* Big text */
-        padding: 12px 24px;          /* Big clickable area */
-        border: none;
-        border-radius: 10px;         /* Rounded corners */
-        cursor: pointer;
-        font-weight: bold;
-        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3); /* Drop shadow */
-      }
+        /* --- UI OVERLAY SYSTEM --- */
+        
+        /* 1. The Welcome Screen (Landing Page) */
+        #landing-page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 20;
+            background: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            transition: opacity 0.5s ease;
+        }
 
-      #startButton {
-        background-color: #4CAF50;   /* Green */
-        color: white;
-      }
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 40px 30px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 85%;
+            width: 350px;
+        }
 
-      #stopButton {
-        background-color: #f44336;   /* Red */
-        color: white;
-      }
+        h1 {
+            margin: 0 0 10px 0;
+            color: var(--text-dark);
+            font-weight: 800;
+            font-size: 2rem;
+            letter-spacing: -1px;
+        }
 
-      button:active {
-        transform: translateY(2px);  /* Click effect */
-        box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.3);
-      }
+        p {
+            margin: 0 0 30px 0;
+            color: var(--text-light);
+            font-size: 1rem;
+            line-height: 1.5;
+        }
 
-      button:disabled {
-        background-color: #cccccc;
-        color: #666666;
-      }
+        .badge {
+            display: inline-block;
+            background: #e0e7ff;
+            color: var(--primary-color);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        /* 2. The AR Interface (Hidden at start) */
+        #ar-interface {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            pointer-events: none; /* Let clicks pass through to 3D scene */
+            display: none; /* Hidden by default */
+        }
+
+        /* Scan Frame Guide */
+        .scan-frame {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70vw;
+            height: 70vw;
+            border: 2px dashed rgba(255, 255, 255, 0.5);
+            border-radius: 20px;
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5); /* Dim background */
+            pointer-events: none;
+        }
+        
+        .scan-text {
+            position: absolute;
+            bottom: -40px;
+            width: 100%;
+            text-align: center;
+            color: white;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* 3. Buttons */
+        .primary-btn {
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding: 16px 32px;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .primary-btn:active {
+            transform: scale(0.98);
+        }
+
+        .primary-btn:disabled {
+            background-color: #94a3b8;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        #stopButton {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #ef4444; /* Red */
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+            pointer-events: auto; /* Re-enable clicks */
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Utilities */
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
     </style>
-  </head>
-  <body>
-    <div id="control">
-      <button id="startButton">Start AR</button>
-      <button id="stopButton">Stop AR</button>
+</head>
+<body>
+
+    <!-- SECTION 1: Welcome Screen -->
+    <div id="landing-page">
+        <div class="card">
+            <div class="badge">WEB AR EXPERIENCE</div>
+            <h1>Learn in 3D</h1>
+            <p>Point your camera at the marker cards to see the magic happen.</p>
+            
+            <button id="startButton" class="primary-btn">
+                <span class="btn-text">Start Experience</span>
+                <div class="spinner"></div>
+            </button>
+        </div>
     </div>
+
+    <!-- SECTION 2: AR Overlay (Visible when running) -->
+    <div id="ar-interface">
+        <!-- Visual Guide -->
+        <div class="scan-frame">
+            <div class="scan-text">Scan Image Target</div>
+        </div>
+
+        <button id="stopButton">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>
+            Stop AR
+        </button>
+    </div>
+
+    <!-- SECTION 3: The 3D Container -->
     <div id="container"></div>
-  </body>
+
+    <!-- Tiny Script to handle UI transitions safely -->
+    <script>
+        const startBtn = document.getElementById('startButton');
+        const stopBtn = document.getElementById('stopButton');
+        const landingPage = document.getElementById('landing-page');
+        const arInterface = document.getElementById('ar-interface');
+        const spinner = document.querySelector('.spinner');
+        const btnText = document.querySelector('.btn-text');
+
+        // Logic for Start Button UI
+        startBtn.addEventListener('click', () => {
+            // Show Loading State
+            startBtn.disabled = true;
+            btnText.textContent = "Initializing Camera...";
+            spinner.style.display = "block";
+
+            // The actual MindAR start logic is in main.js
+            // We set a small timeout to simulate the transition so main.js can catch up
+            setTimeout(() => {
+                landingPage.classList.add('hidden');
+                arInterface.style.display = 'block';
+            }, 3000); // 3 seconds visual buffer (or wait for main.js promise)
+        });
+
+        // Logic for Stop Button UI
+        stopBtn.addEventListener('click', () => {
+            landingPage.classList.remove('hidden');
+            arInterface.style.display = 'none';
+            
+            // Reset Start Button
+            startBtn.disabled = false;
+            btnText.textContent = "Start Experience";
+            spinner.style.display = "none";
+        });
+    </script>
+</body>
 </html>
