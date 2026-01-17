@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- FIXED: Added user-scalable=no and viewport-fit=cover to fix sizing issues -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Educational AR Experience</title>
 
     <!-- Google Fonts -->
@@ -10,27 +11,25 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
-    <!-- Mobile Console (Debug Tool) -->
     <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
     <script>
-      // Initialize console to catch errors
       var vConsole = new VConsole();
     </script>
 
-    <!-- Import Map -->
+    <!-- IMPORTS CHANGED TO 0.147.0 TO FIX CONSOLE ERRORS -->
     <script type="importmap">
     {
       "imports": {
-        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
-        "gltfloader": "https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader.js",
+        "three": "https://unpkg.com/three@0.147.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.147.0/examples/jsm/",
+        "gltfloader": "https://unpkg.com/three@0.147.0/examples/jsm/loaders/GLTFLoader.js",
         "mindar-image-three": "https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-three.prod.js"
       }
     }
     </script>
 
-    <!-- LOAD MAIN.JS (Make sure file is in 'lib' folder!) -->
-    <script src="lib/main.js" type="module"></script>
+    <!-- Point to root main.js -->
+    <script src="main.js" type="module"></script>
 
     <style>
         :root {
@@ -41,22 +40,27 @@
             --text-light: #64748b;
         }
 
-        body {
+        html, body {
+            width: 100%;
+            height: 100%;
             margin: 0;
-            font-family: 'Inter', sans-serif;
+            padding: 0;
             overflow: hidden;
-            background-color: transparent; 
+            background-color: #000; /* Black background hides gaps if any */
         }
 
-        /* Essential: Force video to back */
+        /* FIXED: Force Video to Stretch */
         video {
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: -2;
-            width: 100% !important;
-            height: 100% !important;
-            object-fit: cover;
+            position: absolute !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            min-width: 100vw !important;
+            min-height: 100vh !important;
+            width: auto !important;
+            height: auto !important;
+            object-fit: cover !important;
+            z-index: -2 !important;
         }
 
         #container {
@@ -65,10 +69,10 @@
             position: absolute;
             top: 0;
             left: 0;
-            z-index: 0;
+            z-index: 1;
         }
 
-        /* --- UI STYLES --- */
+        /* UI Styles */
         #landing-page {
             position: absolute;
             top: 0;
@@ -101,7 +105,6 @@
         p { margin: 0 0 30px 0; color: var(--text-light); }
         .badge { background: #e0e7ff; color: var(--primary-color); padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; margin-bottom: 20px; display: inline-block; }
 
-        /* AR Interface */
         #ar-interface {
             position: absolute;
             top: 0;
@@ -189,15 +192,11 @@
     </style>
 </head>
 <body>
-
-    <!-- Landing Page -->
     <div id="landing-page">
         <div class="card">
             <div class="badge">WEB AR EXPERIENCE</div>
             <h1>Learn in 3D</h1>
-            <p>Point your camera at the marker cards to start.</p>
-            
-            <!-- Button is handled by inline script for instant feedback -->
+            <p>Point your camera at the marker cards.</p>
             <button id="startButton" class="primary-btn">
                 <span class="btn-text">Start Experience</span>
                 <div class="spinner"></div>
@@ -205,7 +204,6 @@
         </div>
     </div>
 
-    <!-- AR Overlay -->
     <div id="ar-interface">
         <div class="scan-frame">
             <div class="scan-text">Scan Image Target</div>
@@ -215,35 +213,27 @@
 
     <div id="container"></div>
 
-    <!-- BRIDGE SCRIPT: Handles UI immediately -->
     <script>
         const startBtn = document.getElementById('startButton');
         const spinner = document.querySelector('.spinner');
         const btnText = document.querySelector('.btn-text');
         
-        // Instant visual feedback when clicked
         startBtn.addEventListener('click', () => {
-            console.log("Button Clicked - UI Feedback Started");
+            console.log("UI: Button Clicked");
             startBtn.disabled = true;
-            btnText.textContent = "Initializing...";
+            btnText.textContent = "Loading...";
             spinner.style.display = "block";
             
-            // Check if main.js is actually loaded
-            if (!window.AR_ENGINE_READY) {
-                console.warn("Waiting for Main.js...");
-                setTimeout(() => {
-                    // If 5 seconds pass and AR hasn't taken over, warn the user
-                    if (!window.AR_STARTED) {
-                        alert("The AR Engine is taking a long time to load. Check your internet or if 'main.js' is in the 'lib' folder.");
-                        startBtn.disabled = false;
-                        btnText.textContent = "Try Again";
-                        spinner.style.display = "none";
-                    }
-                }, 8000);
-            }
+            setTimeout(() => {
+                if (!window.AR_STARTED && !window.AR_ENGINE_READY) {
+                    alert("Main.js is slow to load. Please wait or refresh.");
+                    startBtn.disabled = false;
+                    btnText.textContent = "Try Again";
+                    spinner.style.display = "none";
+                }
+            }, 8000);
         });
 
-        // Helper to switch screens (called by main.js)
         window.hideLanding = () => {
             window.AR_STARTED = true;
             document.getElementById('landing-page').classList.add('hidden');
