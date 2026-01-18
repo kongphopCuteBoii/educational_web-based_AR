@@ -5,16 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Educational Web-based AR</title>
 
-    <!-- Google Fonts: Prompt -->
+    <!-- Google Fonts: Prompt & Monospace for Logs -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@200;300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
 
     <!-- Mobile Console -->
     <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
     <script> var vConsole = new VConsole(); </script>
 
-    <!-- Imports (Three.js v147) -->
+    <!-- Imports -->
     <script type="importmap">
     {
       "imports": {
@@ -26,25 +26,22 @@
     }
     </script>
 
-    <!-- LOAD MAIN SCRIPT -->
+    <!-- LOAD MAIN.JS (Must be module) -->
     <script src="lib/main.js" type="module"></script>
 
     <style>
-        :root {
-            --glass-border: rgba(255, 255, 255, 0.1);
-        }
+        :root { --glass-border: rgba(255, 255, 255, 0.1); }
 
         html, body {
             margin: 0; padding: 0; width: 100%; height: 100%;
-            /* แก้ไข: ต้องโปร่งใสเพื่อให้เห็นกล้อง */
-            background-color: transparent;
+            background-color: #000; /* Default to Black */
             color: #f3f4f6;
             overflow: hidden;
             font-family: 'Prompt', sans-serif;
             letter-spacing: -0.5px; 
         }
 
-        /* Essential Video CSS */
+        /* The AR Video Layer */
         video {
             position: absolute !important;
             top: 50% !important; left: 50% !important;
@@ -59,32 +56,24 @@
             position: absolute; top: 0; left: 0; z-index: 1;
         }
 
-        /* --- SCREEN 1: INTRO (แก้ไขให้เห็นตัวหนังสือเลย) --- */
+        /* --- SCREEN 1: INTRO --- */
         #intro-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #000; /* สีดำทึบ */
+            background-color: #000;
             z-index: 100;
             display: flex; flex-direction: column;
             justify-content: center; align-items: center;
             padding: 20px; text-align: center;
-            transition: opacity 0.5s ease;
+            transition: opacity 0.8s ease; /* Fade Black */
             cursor: pointer;
         }
 
         .intro-text {
-            font-size: 1.1rem; 
-            font-weight: 300; 
-            line-height: 1.5;
-            max-width: 600px;
-            color: white;
-            opacity: 1; /* แก้ไข: ให้เห็นทันที ไม่ต้องรอ Animation */
+            font-size: 1.1rem; font-weight: 300; line-height: 1.5;
+            color: white; opacity: 1;
         }
-
         .intro-sub {
-            margin-top: 40px;
-            font-size: 0.85rem; 
-            color: #888;
-            font-weight: 400;
+            margin-top: 40px; font-size: 0.85rem; color: #666;
             animation: pulse 2s infinite ease-in-out;
         }
 
@@ -94,264 +83,165 @@
             z-index: 50;
             display: flex; flex-direction: column;
             justify-content: center; align-items: center;
-            /* พื้นหลังสีเทาเข้มแบบ Tech */
-            background: radial-gradient(circle at 50% -20%, #2a2d33 0%, #050505 80%);
+            /* Black Fade Gradient */
+            background: radial-gradient(circle at 50% -20%, #1a1a1a 0%, #000000 90%);
             opacity: 0; pointer-events: none;
-            transition: opacity 0.5s ease;
+            transition: opacity 1s ease;
         }
         
-        .fog-glow {
-            position: absolute; top: 20%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 60vw; height: 60vw;
-            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0) 70%);
-            filter: blur(60px);
-            z-index: -1;
-        }
-
-        .content-wrapper {
-            text-align: center;
-            max-width: 800px;
-            padding: 0 20px;
-            z-index: 2;
-        }
+        .content-wrapper { text-align: center; max-width: 800px; padding: 0 20px; z-index: 2; }
 
         h1 {
-            font-weight: 500;
-            font-size: clamp(2rem, 5vw, 4rem);
-            margin: 0;
-            line-height: 1.1;
-            background: linear-gradient(180deg, #fff 0%, #aaa 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 20px 40px rgba(0,0,0,0.5);
-            letter-spacing: -1.5px;
+            font-weight: 500; font-size: clamp(2rem, 5vw, 4rem); margin: 0; line-height: 1.1;
+            background: linear-gradient(180deg, #fff 0%, #888 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
 
-        .advisor {
-            margin-top: 15px;
-            font-size: clamp(1rem, 1.5vw, 1.2rem);
-            font-weight: 300;
-            color: rgba(255, 255, 255, 0.9);
-            letter-spacing: -0.5px;
-        }
+        .advisor { margin-top: 15px; font-size: 1.1rem; color: #aaa; font-weight: 300; }
+        .subtitle { margin-top: 25px; font-size: 0.95rem; color: #888; font-weight: 300; line-height: 1.6; }
 
-        .subtitle {
-            margin-top: 25px;
-            font-size: clamp(0.9rem, 1.5vw, 1.05rem);
-            color: #9ca3af;
-            font-weight: 300;
-            line-height: 1.6;
-            max-width: 680px;
-            margin-left: auto; margin-right: auto;
-        }
-
+        /* BUTTON & STATUS LOG */
         #startButton {
-            margin-top: 45px;
-            background: rgba(255, 255, 255, 0.05);
+            margin-top: 40px;
+            background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 14px 45px;
-            font-size: 1rem;
-            border-radius: 50px;
-            cursor: pointer;
+            color: white; padding: 14px 45px; font-size: 1rem;
+            border-radius: 50px; cursor: pointer;
             backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
             font-family: 'Prompt', sans-serif;
-            font-weight: 400;
-            letter-spacing: -0.5px;
+            transition: all 0.3s ease;
+        }
+        #startButton:disabled { opacity: 0.5; cursor: wait; }
+
+        #status-log {
+            margin-top: 15px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: #00ff88; /* Matrix Green */
+            min-height: 20px;
+            opacity: 0.8;
         }
 
-        #startButton:hover {
-            background: white;
-            color: black;
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
-
-        #startButton:disabled {
-            opacity: 0.5; cursor: not-allowed;
-            background: rgba(255,255,255,0.1); color: #888;
-        }
-
-        .credits {
-            margin-top: 60px;
-            display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
-        }
-
+        /* CREDITS */
+        .credits { margin-top: 50px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
         .staff-member {
-            width: 45px; height: 45px;
-            border-radius: 50%;
-            background: #222;
-            border: 1px solid var(--glass-border);
+            width: 45px; height: 45px; border-radius: 50%; background: #222;
+            border: 1px solid var(--glass-border); overflow: hidden;
             display: flex; justify-content: center; align-items: center;
-            overflow: hidden;
-            transition: transform 0.3s ease, border-color 0.3s ease;
-            position: relative;
         }
+        .staff-member img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%); }
 
-        .staff-member img {
-            width: 100%; height: 100%; object-fit: cover;
-            filter: grayscale(100%); transition: filter 0.3s ease;
-        }
-
-        .staff-member:hover { transform: translateY(-5px) scale(1.1); border-color: white; }
-        .staff-member:hover img { filter: grayscale(0%); }
-
-        .staff-member::after {
-            content: attr(data-name);
-            position: absolute; bottom: -25px;
-            font-size: 0.65rem; color: rgba(255,255,255,0.8); 
-            opacity: 0; white-space: nowrap; 
-            transition: opacity 0.3s ease;
-            font-weight: 300;
-            letter-spacing: 0px;
-        }
-        .staff-member:hover::after { opacity: 1; }
-
+        /* AR UI */
         #ar-interface {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 10; display: none; pointer-events: none;
         }
-
         .scan-frame {
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 70vw; height: 70vw;
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 20px;
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 70vw; height: 70vw; border: 1px solid rgba(255,255,255,0.3); border-radius: 20px;
         }
-        
-        .scan-corner { position: absolute; width: 20px; height: 20px; border-color: white; border-style: solid; opacity: 0.8; }
-        .tl { top: -1px; left: -1px; border-width: 3px 0 0 3px; border-radius: 10px 0 0 0;}
-        .tr { top: -1px; right: -1px; border-width: 3px 3px 0 0; border-radius: 0 10px 0 0;}
-        .bl { bottom: -1px; left: -1px; border-width: 0 0 3px 3px; border-radius: 0 0 0 10px;}
-        .br { bottom: -1px; right: -1px; border-width: 0 3px 3px 0; border-radius: 0 0 10px 0;}
-
         #stopButton {
-            position: absolute; bottom: 50px; left: 50%;
-            transform: translateX(-50%);
-            background: rgba(220, 38, 38, 0.85);
-            color: white; border: none;
-            padding: 10px 28px; border-radius: 30px;
-            font-size: 0.9rem;
-            font-weight: 500; pointer-events: auto; cursor: pointer;
-            backdrop-filter: blur(5px);
+            position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%);
+            background: rgba(220, 38, 38, 0.9); color: white; border: none;
+            padding: 10px 28px; border-radius: 30px; pointer-events: auto;
             font-family: 'Prompt', sans-serif;
-            letter-spacing: -0.3px;
-            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
         }
 
         @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
-
         .hidden { display: none !important; }
         .visible { opacity: 1 !important; pointer-events: auto !important; }
     </style>
 </head>
 <body>
 
-    <!-- 1. INTRO SCREEN -->
+    <!-- 1. INTRO -->
     <div id="intro-screen">
         <div class="intro-text">
-            Tech Demo นี้จัดทำขึ้นเพื่อทดสอบขีดความสามารถของ WebGL และความเป็นไปได้ในการพัฒนาต่อยอด<br>
+            Tech Demo นี้จัดทำขึ้นเพื่อทดสอบขีดความสามารถของ WebGL<br>
             โปรดเตรียม Marker ให้พร้อมก่อนเริ่มทดสอบระบบ
         </div>
         <div class="intro-sub">( แตะหน้าจอเพื่อดำเนินการต่อ )</div>
     </div>
 
-    <!-- 2. LANDING PAGE -->
+    <!-- 2. LANDING -->
     <div id="landing-page">
-        <div class="fog-glow"></div>
-
         <div class="content-wrapper">
             <h1>สื่อการเรียนรู้<br>Web-based AR</h1>
-
             <div class="advisor">นำเสนอ ครูชาลิณี สุทธะมี</div>
-            
             <p class="subtitle">
-                ขับเคลื่อนด้วย MindAR และ ThreeJS เพื่อการรองรับที่ครอบคลุมและเสถียรบนทุกแพลตฟอร์ม Tech Demo ตัวนี้แสดงให้เห็นถึงประสิทธิภาพการ Render 3D บนเว็บเบราว์เซอร์ ที่ลื่นไหลและเข้าถึงง่าย รองรับอุปกรณ์ทั่วไปโดยไม่ต้องติดตั้งแอปพลิเคชันเพิ่มเติม
+                ขับเคลื่อนด้วย MindAR และ ThreeJS เพื่อการรองรับที่ครอบคลุมและเสถียรบนทุกแพลตฟอร์ม
             </p>
 
             <button id="startButton">เริ่มรันระบบ</button>
+            <div id="status-log">System Standby...</div> <!-- Status Log -->
 
-            <!-- Credits Zone -->
             <div class="credits">
-                <div class="staff-member" data-name="Project Lead">
-                    <img src="https://ui-avatars.com/api/?name=Lead&background=333&color=fff&font-size=0.4" alt="Staff 1">
-                </div>
-                <div class="staff-member" data-name="UX/UI Designer">
-                    <img src="https://ui-avatars.com/api/?name=Des&background=333&color=fff&font-size=0.4" alt="Staff 2">
-                </div>
-                <div class="staff-member" data-name="3D Modeler">
-                    <img src="https://ui-avatars.com/api/?name=3D&background=333&color=fff&font-size=0.4" alt="Staff 3">
-                </div>
-                <div class="staff-member" data-name="Docs">
-                    <img src="https://ui-avatars.com/api/?name=Doc&background=333&color=fff&font-size=0.4" alt="Staff 4">
-                </div>
-                <div class="staff-member" data-name="Tester">
-                    <img src="https://ui-avatars.com/api/?name=QA&background=333&color=fff&font-size=0.4" alt="Staff 5">
-                </div>
+                <div class="staff-member"><img src="https://ui-avatars.com/api/?name=L&background=333&color=fff" alt="1"></div>
+                <div class="staff-member"><img src="https://ui-avatars.com/api/?name=D&background=333&color=fff" alt="2"></div>
+                <div class="staff-member"><img src="https://ui-avatars.com/api/?name=3&background=333&color=fff" alt="3"></div>
+                <div class="staff-member"><img src="https://ui-avatars.com/api/?name=M&background=333&color=fff" alt="4"></div>
+                <div class="staff-member"><img src="https://ui-avatars.com/api/?name=T&background=333&color=fff" alt="5"></div>
             </div>
         </div>
     </div>
 
-    <!-- 3. AR INTERFACE -->
+    <!-- 3. AR UI -->
     <div id="ar-interface">
-        <div class="scan-frame">
-            <div class="scan-corner tl"></div>
-            <div class="scan-corner tr"></div>
-            <div class="scan-corner bl"></div>
-            <div class="scan-corner br"></div>
-        </div>
+        <div class="scan-frame"></div>
         <button id="stopButton">จบการทำงาน</button>
     </div>
 
     <div id="container"></div>
 
     <script>
-        const introScreen = document.getElementById('intro-screen');
-        const landingPage = document.getElementById('landing-page');
+        const intro = document.getElementById('intro-screen');
+        const landing = document.getElementById('landing-page');
         const startBtn = document.getElementById('startButton');
-        
-        introScreen.addEventListener('click', () => {
-            introScreen.style.opacity = '0';
+        const statusLog = document.getElementById('status-log');
+        const stopBtn = document.getElementById('stopButton');
+
+        // Transition: Intro -> Landing
+        intro.addEventListener('click', () => {
+            intro.style.opacity = '0';
             setTimeout(() => {
-                introScreen.classList.add('hidden');
-                landingPage.classList.add('visible');
-            }, 500);
+                intro.classList.add('hidden');
+                landing.classList.add('visible');
+            }, 800);
         });
 
+        // ACTION: Start Button
         startBtn.addEventListener('click', () => {
-            startBtn.innerText = "กำลังเชื่อมต่อกล้อง...";
             startBtn.disabled = true;
-            document.body.style.cursor = 'wait';
+            statusLog.innerText = "[SYSTEM]: Requesting Main Module...";
             
-            setTimeout(() => {
-                if(!window.AR_ENGINE_READY) {
-                   startBtn.innerText = "เกิดข้อผิดพลาด (โปรดรีเฟรช)";
-                   alert("Connection Timed Out: ไม่สามารถโหลดโมดูล AR ได้ (ตรวจสอบว่าไฟล์ main.js อยู่ในโฟลเดอร์ lib ใช่หรือไม่)");
-                }
-            }, 10000);
+            // Check if Main.js loaded
+            if (window.startARSystem) {
+                // Call the function inside main.js
+                window.startARSystem(
+                    // Callback to update status text
+                    (msg) => { statusLog.innerText = "[SYSTEM]: " + msg; },
+                    // Callback when done
+                    () => { 
+                        landing.style.opacity = '0';
+                        setTimeout(() => {
+                            landing.classList.remove('visible');
+                            document.getElementById('ar-interface').style.display = 'block';
+                            document.body.style.backgroundColor = 'transparent'; // Show Camera
+                        }, 500);
+                    }
+                );
+            } else {
+                statusLog.innerText = "[ERROR]: Main.js not loaded.";
+                statusLog.style.color = 'red';
+                startBtn.disabled = false;
+            }
         });
 
-        window.hideLanding = () => {
-            landingPage.style.opacity = '0';
-            setTimeout(() => {
-                landingPage.classList.remove('visible');
-                document.getElementById('ar-interface').style.display = 'block';
-            }, 500);
-        };
-
-        window.showLanding = () => {
-            document.getElementById('ar-interface').style.display = 'none';
-            landingPage.classList.add('visible');
-            landingPage.style.opacity = '1';
-            
-            startBtn.disabled = false;
-            startBtn.innerText = "เริ่มรันระบบ";
-            document.body.style.cursor = 'default';
-        };
+        // ACTION: Stop Button
+        stopBtn.addEventListener('click', () => {
+             if(window.stopARSystem) window.stopARSystem();
+             location.reload(); // Simple reload to reset everything cleanly
+        });
     </script>
 </body>
 </html>
