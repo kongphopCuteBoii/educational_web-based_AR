@@ -1,22 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
-    <!-- FIXED: Added user-scalable=no and viewport-fit=cover to fix sizing issues -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Educational AR Experience</title>
+    <title>Educational Web-based AR</title>
 
-    <!-- Google Fonts -->
+    <!-- Google Fonts: Prompt -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@200;300;400;500;600&display=swap" rel="stylesheet">
 
+    <!-- Mobile Console -->
     <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
-    <script>
-      var vConsole = new VConsole();
-    </script>
+    <script> var vConsole = new VConsole(); </script>
 
-    <!-- IMPORTS CHANGED TO 0.147.0 TO FIX CONSOLE ERRORS -->
+    <!-- Imports (Three.js v147) -->
     <script type="importmap">
     {
       "imports": {
@@ -28,227 +26,342 @@
     }
     </script>
 
-    <!-- Point to root main.js -->
-    <script src="lib/main.js" type="module"></script>
+    <script src="main.js" type="module"></script>
 
     <style>
         :root {
-            --primary-color: #6366f1;
-            --glass-bg: rgba(255, 255, 255, 0.85);
-            --glass-border: rgba(255, 255, 255, 0.3);
-            --text-dark: #1e293b;
-            --text-light: #64748b;
+            --bg-color: #050505;
+            --surface-color: #0f1012;
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --glass-border: rgba(255, 255, 255, 0.1);
         }
 
         html, body {
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
             overflow: hidden;
-            background-color: #000; /* Black background hides gaps if any */
+            font-family: 'Prompt', sans-serif;
+            letter-spacing: -0.5px; 
         }
 
-        /* FIXED: Force Video to Stretch */
+        /* Essential Video CSS */
         video {
             position: absolute !important;
-            top: 50% !important;
-            left: 50% !important;
+            top: 50% !important; left: 50% !important;
             transform: translate(-50%, -50%) !important;
-            min-width: 100vw !important;
-            min-height: 100vh !important;
-            width: auto !important;
-            height: auto !important;
-            object-fit: cover !important;
-            z-index: -2 !important;
+            min-width: 100vw !important; min-height: 100vh !important;
+            width: auto !important; height: auto !important;
+            object-fit: cover !important; z-index: -2 !important;
         }
 
         #container {
-            width: 100vw;
-            height: 100vh;
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 1;
+            width: 100vw; height: 100vh;
+            position: absolute; top: 0; left: 0; z-index: 1;
         }
 
-        /* UI Styles */
+        /* --- SCREEN 1: INTRO --- */
+        #intro-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #000;
+            z-index: 100;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            padding: 20px; text-align: center;
+            transition: opacity 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+        }
+
+        .intro-text {
+            font-size: 1.1rem; 
+            font-weight: 300; 
+            line-height: 1.5;
+            max-width: 600px;
+            color: white;
+            opacity: 0;
+            animation: fadeUp 1s ease-out forwards 0.5s;
+        }
+
+        .intro-sub {
+            margin-top: 40px;
+            font-size: 0.85rem; 
+            color: #666;
+            opacity: 0;
+            animation: pulse 2s infinite ease-in-out 1.5s forwards;
+            font-weight: 400;
+        }
+
+        /* --- SCREEN 2: LANDING PAGE --- */
         #landing-page {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 20;
-            background: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 50;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            background: radial-gradient(circle at 50% -20%, #2a2d33 0%, #050505 60%);
+            opacity: 0; pointer-events: none;
+            transition: opacity 1s ease;
+        }
+        
+        .fog-glow {
+            position: absolute; top: 20%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60vw; height: 60vw;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, rgba(0,0,0,0) 70%);
+            filter: blur(60px);
+            z-index: -1;
+            animation: fogMove 10s infinite alternate ease-in-out;
+        }
+
+        .content-wrapper {
             text-align: center;
-            transition: opacity 0.5s ease;
+            max-width: 800px;
+            padding: 0 20px;
+            z-index: 2;
         }
 
-        .card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+        h1 {
+            font-weight: 500;
+            font-size: clamp(2rem, 5vw, 4rem);
+            margin: 0;
+            line-height: 1.1;
+            background: linear-gradient(180deg, #fff 0%, #aaa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            letter-spacing: -1.5px;
+        }
+
+        /* ส่วนที่เพิ่มเข้ามาใหม่: ชื่อครูที่ปรึกษา */
+        .advisor {
+            margin-top: 15px;
+            font-size: clamp(1rem, 1.5vw, 1.2rem);
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.9);
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            margin-top: 25px;
+            font-size: clamp(0.9rem, 1.5vw, 1.05rem);
+            color: var(--text-secondary);
+            font-weight: 300;
+            line-height: 1.6;
+            max-width: 680px;
+            margin-left: auto; margin-right: auto;
+        }
+
+        #startButton {
+            margin-top: 45px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 14px 45px;
+            font-size: 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            font-family: 'Prompt', sans-serif;
+            font-weight: 400;
+            letter-spacing: -0.5px;
+        }
+
+        #startButton:hover {
+            background: white;
+            color: black;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        #startButton:disabled {
+            opacity: 0.5; cursor: not-allowed;
+            background: rgba(255,255,255,0.1); color: #888;
+        }
+
+        /* Credits Section */
+        .credits {
+            margin-top: 60px;
+            display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+        }
+
+        .staff-member {
+            width: 45px; height: 45px;
+            border-radius: 50%;
+            background: #222;
             border: 1px solid var(--glass-border);
-            padding: 40px 30px;
-            border-radius: 24px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            max-width: 85%;
-            width: 350px;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+            position: relative;
         }
 
-        h1 { margin: 0 0 10px 0; color: var(--text-dark); font-weight: 800; font-size: 2rem; }
-        p { margin: 0 0 30px 0; color: var(--text-light); }
-        .badge { background: #e0e7ff; color: var(--primary-color); padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; margin-bottom: 20px; display: inline-block; }
+        .staff-member img {
+            width: 100%; height: 100%; object-fit: cover;
+            filter: grayscale(100%); transition: filter 0.3s ease;
+        }
 
+        .staff-member:hover { transform: translateY(-5px) scale(1.1); border-color: white; }
+        .staff-member:hover img { filter: grayscale(0%); }
+
+        .staff-member::after {
+            content: attr(data-name);
+            position: absolute; bottom: -25px;
+            font-size: 0.65rem; color: rgba(255,255,255,0.8); 
+            opacity: 0; white-space: nowrap; 
+            transition: opacity 0.3s ease;
+            font-weight: 300;
+            letter-spacing: 0px;
+        }
+        .staff-member:hover::after { opacity: 1; }
+
+        /* AR UI */
         #ar-interface {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 10;
-            pointer-events: none;
-            display: none; 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 10; display: none; pointer-events: none;
         }
 
         .scan-frame {
-            position: absolute;
-            top: 50%;
-            left: 50%;
+            position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            width: 70vw;
-            height: 70vw;
-            border: 2px dashed rgba(255, 255, 255, 0.5);
+            width: 70vw; height: 70vw;
+            border: 1px solid rgba(255,255,255,0.2);
             border-radius: 20px;
-            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
-            pointer-events: none;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
         }
         
-        .scan-text {
-            position: absolute;
-            bottom: -40px;
-            width: 100%;
-            text-align: center;
-            color: white;
-            font-weight: 600;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-        }
-
-        .primary-btn {
-            background-color: var(--primary-color);
-            color: white;
-            font-size: 1.1rem;
-            font-weight: 600;
-            padding: 16px 32px;
-            border: none;
-            border-radius: 16px;
-            cursor: pointer;
-            width: 100%;
-            transition: transform 0.2s;
-            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-        }
-        .primary-btn:active { transform: scale(0.98); }
-        .primary-btn:disabled { background-color: #94a3b8; cursor: not-allowed; }
+        .scan-corner { position: absolute; width: 20px; height: 20px; border-color: white; border-style: solid; opacity: 0.8; }
+        .tl { top: -1px; left: -1px; border-width: 3px 0 0 3px; border-radius: 10px 0 0 0;}
+        .tr { top: -1px; right: -1px; border-width: 3px 3px 0 0; border-radius: 0 10px 0 0;}
+        .bl { bottom: -1px; left: -1px; border-width: 0 0 3px 3px; border-radius: 0 0 0 10px;}
+        .br { bottom: -1px; right: -1px; border-width: 0 3px 3px 0; border-radius: 0 0 10px 0;}
 
         #stopButton {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
+            position: absolute; bottom: 50px; left: 50%;
             transform: translateX(-50%);
-            background-color: #ef4444;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 30px;
-            font-weight: 600;
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
-            pointer-events: auto;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            background: rgba(220, 38, 38, 0.85);
+            color: white; border: none;
+            padding: 10px 28px; border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 500; pointer-events: auto; cursor: pointer;
+            backdrop-filter: blur(5px);
+            font-family: 'Prompt', sans-serif;
+            letter-spacing: -0.3px;
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
         }
 
-        .spinner {
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-            display: none;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .hidden { opacity: 0; pointer-events: none; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+        @keyframes fogMove { 0% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; } 100% { transform: translate(-45%, -55%) scale(1.1); opacity: 0.7; } }
+
+        .hidden { display: none !important; }
+        .visible { opacity: 1 !important; pointer-events: auto !important; }
     </style>
 </head>
 <body>
+
+    <!-- 1. INTRO SCREEN -->
+    <div id="intro-screen">
+        <div class="intro-text">
+            Tech Demo นี้จัดทำขึ้นเพื่อทดสอบขีดความสามารถของ WebGL และความเป็นไปได้ในการพัฒนาต่อยอด<br>
+            โปรดเตรียม Marker ให้พร้อมก่อนเริ่มทดสอบระบบ
+        </div>
+        <div class="intro-sub">( แตะหน้าจอเพื่อดำเนินการต่อ )</div>
+    </div>
+
+    <!-- 2. LANDING PAGE -->
     <div id="landing-page">
-        <div class="card">
-            <div class="badge">WEB AR EXPERIENCE</div>
-            <h1>Learn in 3D</h1>
-            <p>Point your camera at the marker cards.</p>
-            <button id="startButton" class="primary-btn">
-                <span class="btn-text">Start Experience</span>
-                <div class="spinner"></div>
-            </button>
+        <div class="fog-glow"></div>
+
+        <div class="content-wrapper">
+            <h1>สื่อการเรียนรู้<br>Web-based AR</h1>
+
+            <!-- เพิ่มส่วนนี้ -->
+            <div class="advisor">นำเสนอ ครูชาลิณี สุทธะมี</div>
+            
+            <p class="subtitle">
+                ขับเคลื่อนด้วย MindAR และ ThreeJS เพื่อการรองรับที่ครอบคลุมและเสถียรบนทุกแพลตฟอร์ม Tech Demo ตัวนี้แสดงให้เห็นถึงประสิทธิภาพการ Render 3D บนเว็บเบราว์เซอร์ ที่ลื่นไหลและเข้าถึงง่าย รองรับอุปกรณ์ทั่วไปโดยไม่ต้องติดตั้งแอปพลิเคชันเพิ่มเติม
+            </p>
+
+            <button id="startButton">เริ่มรันระบบ</button>
+
+            <!-- Credits Zone -->
+            <div class="credits">
+                <div class="staff-member" data-name="Project Lead">
+                    <img src="https://ui-avatars.com/api/?name=Lead&background=333&color=fff&font-size=0.4" alt="Staff 1">
+                </div>
+                <div class="staff-member" data-name="UX/UI Designer">
+                    <img src="https://ui-avatars.com/api/?name=Des&background=333&color=fff&font-size=0.4" alt="Staff 2">
+                </div>
+                <div class="staff-member" data-name="3D Modeler">
+                    <img src="https://ui-avatars.com/api/?name=3D&background=333&color=fff&font-size=0.4" alt="Staff 3">
+                </div>
+                <div class="staff-member" data-name="Docs">
+                    <img src="https://ui-avatars.com/api/?name=Doc&background=333&color=fff&font-size=0.4" alt="Staff 4">
+                </div>
+                <div class="staff-member" data-name="Tester">
+                    <img src="https://ui-avatars.com/api/?name=QA&background=333&color=fff&font-size=0.4" alt="Staff 5">
+                </div>
+            </div>
         </div>
     </div>
 
+    <!-- 3. AR INTERFACE -->
     <div id="ar-interface">
         <div class="scan-frame">
-            <div class="scan-text">Scan Image Target</div>
+            <div class="scan-corner tl"></div>
+            <div class="scan-corner tr"></div>
+            <div class="scan-corner bl"></div>
+            <div class="scan-corner br"></div>
         </div>
-        <button id="stopButton">Stop AR</button>
+        <button id="stopButton">จบการทำงาน</button>
     </div>
 
     <div id="container"></div>
 
     <script>
+        const introScreen = document.getElementById('intro-screen');
+        const landingPage = document.getElementById('landing-page');
         const startBtn = document.getElementById('startButton');
-        const spinner = document.querySelector('.spinner');
-        const btnText = document.querySelector('.btn-text');
         
+        introScreen.addEventListener('click', () => {
+            introScreen.style.opacity = '0';
+            setTimeout(() => {
+                introScreen.classList.add('hidden');
+                landingPage.classList.add('visible');
+            }, 1000);
+        });
+
         startBtn.addEventListener('click', () => {
-            console.log("UI: Button Clicked");
+            startBtn.innerText = "กำลังเชื่อมต่อกล้อง...";
             startBtn.disabled = true;
-            btnText.textContent = "Loading...";
-            spinner.style.display = "block";
+            document.body.style.cursor = 'wait';
             
             setTimeout(() => {
-                if (!window.AR_STARTED && !window.AR_ENGINE_READY) {
-                    alert("Main.js is slow to load. Please wait or refresh.");
-                    startBtn.disabled = false;
-                    btnText.textContent = "Try Again";
-                    spinner.style.display = "none";
+                if(!window.AR_ENGINE_READY) {
+                   startBtn.innerText = "เกิดข้อผิดพลาด (โปรดรีเฟรช)";
+                   alert("Connection Timed Out: ไม่สามารถโหลดโมดูล AR ได้");
                 }
-            }, 8000);
+            }, 10000);
         });
 
         window.hideLanding = () => {
-            window.AR_STARTED = true;
-            document.getElementById('landing-page').classList.add('hidden');
-            document.getElementById('ar-interface').style.display = 'block';
+            landingPage.style.opacity = '0';
+            setTimeout(() => {
+                landingPage.classList.remove('visible');
+                document.getElementById('ar-interface').style.display = 'block';
+            }, 500);
         };
 
         window.showLanding = () => {
-            window.AR_STARTED = false;
-            document.getElementById('landing-page').classList.remove('hidden');
             document.getElementById('ar-interface').style.display = 'none';
+            landingPage.classList.add('visible');
+            landingPage.style.opacity = '1';
+            
             startBtn.disabled = false;
-            btnText.textContent = "Start Experience";
-            spinner.style.display = "none";
+            startBtn.innerText = "เริ่มรันระบบ";
+            document.body.style.cursor = 'default';
         };
     </script>
 </body>
 </html>
-
