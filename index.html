@@ -26,7 +26,8 @@
     }
     </script>
 
-    <script src="main.js" type="module"></script>
+    <!-- แก้ไขตรงนี้: ชี้กลับไปที่โฟลเดอร์ lib/main.js -->
+    <script src="lib/main.js" type="module"></script>
 
     <style>
         :root {
@@ -132,7 +133,6 @@
             letter-spacing: -1.5px;
         }
 
-        /* ส่วนที่เพิ่มเข้ามาใหม่: ชื่อครูที่ปรึกษา */
         .advisor {
             margin-top: 15px;
             font-size: clamp(1rem, 1.5vw, 1.2rem);
@@ -179,7 +179,6 @@
             background: rgba(255,255,255,0.1); color: #888;
         }
 
-        /* Credits Section */
         .credits {
             margin-top: 60px;
             display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
@@ -215,7 +214,6 @@
         }
         .staff-member:hover::after { opacity: 1; }
 
-        /* AR UI */
         #ar-interface {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 10; display: none; pointer-events: none;
@@ -245,123 +243,3 @@
             font-size: 0.9rem;
             font-weight: 500; pointer-events: auto; cursor: pointer;
             backdrop-filter: blur(5px);
-            font-family: 'Prompt', sans-serif;
-            letter-spacing: -0.3px;
-            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
-        }
-
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
-        @keyframes fogMove { 0% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; } 100% { transform: translate(-45%, -55%) scale(1.1); opacity: 0.7; } }
-
-        .hidden { display: none !important; }
-        .visible { opacity: 1 !important; pointer-events: auto !important; }
-    </style>
-</head>
-<body>
-
-    <!-- 1. INTRO SCREEN -->
-    <div id="intro-screen">
-        <div class="intro-text">
-            Tech Demo นี้จัดทำขึ้นเพื่อทดสอบขีดความสามารถของ WebGL และความเป็นไปได้ในการพัฒนาต่อยอด<br>
-            โปรดเตรียม Marker ให้พร้อมก่อนเริ่มทดสอบระบบ
-        </div>
-        <div class="intro-sub">( แตะหน้าจอเพื่อดำเนินการต่อ )</div>
-    </div>
-
-    <!-- 2. LANDING PAGE -->
-    <div id="landing-page">
-        <div class="fog-glow"></div>
-
-        <div class="content-wrapper">
-            <h1>สื่อการเรียนรู้<br>Web-based AR</h1>
-
-            <!-- เพิ่มส่วนนี้ -->
-            <div class="advisor">นำเสนอ ครูชาลิณี สุทธะมี</div>
-            
-            <p class="subtitle">
-                ขับเคลื่อนด้วย MindAR และ ThreeJS เพื่อการรองรับที่ครอบคลุมและเสถียรบนทุกแพลตฟอร์ม Tech Demo ตัวนี้แสดงให้เห็นถึงประสิทธิภาพการ Render 3D บนเว็บเบราว์เซอร์ ที่ลื่นไหลและเข้าถึงง่าย รองรับอุปกรณ์ทั่วไปโดยไม่ต้องติดตั้งแอปพลิเคชันเพิ่มเติม
-            </p>
-
-            <button id="startButton">เริ่มรันระบบ</button>
-
-            <!-- Credits Zone -->
-            <div class="credits">
-                <div class="staff-member" data-name="Project Lead">
-                    <img src="https://ui-avatars.com/api/?name=Lead&background=333&color=fff&font-size=0.4" alt="Staff 1">
-                </div>
-                <div class="staff-member" data-name="UX/UI Designer">
-                    <img src="https://ui-avatars.com/api/?name=Des&background=333&color=fff&font-size=0.4" alt="Staff 2">
-                </div>
-                <div class="staff-member" data-name="3D Modeler">
-                    <img src="https://ui-avatars.com/api/?name=3D&background=333&color=fff&font-size=0.4" alt="Staff 3">
-                </div>
-                <div class="staff-member" data-name="Docs">
-                    <img src="https://ui-avatars.com/api/?name=Doc&background=333&color=fff&font-size=0.4" alt="Staff 4">
-                </div>
-                <div class="staff-member" data-name="Tester">
-                    <img src="https://ui-avatars.com/api/?name=QA&background=333&color=fff&font-size=0.4" alt="Staff 5">
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 3. AR INTERFACE -->
-    <div id="ar-interface">
-        <div class="scan-frame">
-            <div class="scan-corner tl"></div>
-            <div class="scan-corner tr"></div>
-            <div class="scan-corner bl"></div>
-            <div class="scan-corner br"></div>
-        </div>
-        <button id="stopButton">จบการทำงาน</button>
-    </div>
-
-    <div id="container"></div>
-
-    <script>
-        const introScreen = document.getElementById('intro-screen');
-        const landingPage = document.getElementById('landing-page');
-        const startBtn = document.getElementById('startButton');
-        
-        introScreen.addEventListener('click', () => {
-            introScreen.style.opacity = '0';
-            setTimeout(() => {
-                introScreen.classList.add('hidden');
-                landingPage.classList.add('visible');
-            }, 1000);
-        });
-
-        startBtn.addEventListener('click', () => {
-            startBtn.innerText = "กำลังเชื่อมต่อกล้อง...";
-            startBtn.disabled = true;
-            document.body.style.cursor = 'wait';
-            
-            setTimeout(() => {
-                if(!window.AR_ENGINE_READY) {
-                   startBtn.innerText = "เกิดข้อผิดพลาด (โปรดรีเฟรช)";
-                   alert("Connection Timed Out: ไม่สามารถโหลดโมดูล AR ได้");
-                }
-            }, 10000);
-        });
-
-        window.hideLanding = () => {
-            landingPage.style.opacity = '0';
-            setTimeout(() => {
-                landingPage.classList.remove('visible');
-                document.getElementById('ar-interface').style.display = 'block';
-            }, 500);
-        };
-
-        window.showLanding = () => {
-            document.getElementById('ar-interface').style.display = 'none';
-            landingPage.classList.add('visible');
-            landingPage.style.opacity = '1';
-            
-            startBtn.disabled = false;
-            startBtn.innerText = "เริ่มรันระบบ";
-            document.body.style.cursor = 'default';
-        };
-    </script>
-</body>
-</html>
