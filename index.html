@@ -7,8 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
-    <script> var vConsole = new VConsole(); </script>
+    
     <script type="importmap">
     {
       "imports": {
@@ -167,10 +166,19 @@
         
         #btnStop {
             position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%);
-            background: rgba(200, 40, 40, 0.9); color: white; border: none; padding: 12px 30px;
-            border-radius: 40px; font-size: 0.9rem; font-weight: 400; pointer-events: auto;
-            cursor: pointer; backdrop-filter: blur(10px); font-family: 'Prompt', sans-serif;
-            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(0, 0, 0, 0.8); /* Glossy Black */
+            color: white; border: 1px solid rgba(255,255,255,0.3);
+            padding: 12px 30px; border-radius: 40px; font-size: 0.9rem; font-weight: 400;
+            pointer-events: auto; cursor: pointer; backdrop-filter: blur(15px);
+            font-family: 'Prompt', sans-serif; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        #noMarkerMsg {
+            position: absolute; top: 15%; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1);
+            color: #ddd; padding: 10px 20px; border-radius: 30px;
+            font-size: 0.8rem; backdrop-filter: blur(10px);
+            pointer-events: none; opacity: 0; transition: opacity 0.3s ease;
         }
 
         @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -178,6 +186,7 @@
         @keyframes fogMove { 0% { opacity: 0.4; transform: translateX(-50%) scale(1); } 100% { opacity: 0.6; transform: translateX(-50%) scale(1.1); } }
         .hidden { display: none !important; }
         .visible { opacity: 1 !important; pointer-events: auto !important; }
+        .showMsg { opacity: 1 !important; }
     </style>
 </head>
 <body>
@@ -275,6 +284,7 @@
     </div>
 
     <div id="arUI">
+        <div id="noMarkerMsg">ไม่พบ Marker ในกล้อง</div>
         <div class="scanFrame">
             <div class="corner tl"></div><div class="corner tr"></div>
             <div class="corner bl"></div><div class="corner br"></div>
@@ -296,6 +306,13 @@
         const btnStart = document.getElementById('btnStart');
         const log = document.getElementById('sysLog');
         const btnStop = document.getElementById('btnStop');
+        const notFound = document.getElementById('noMarkerMsg');
+
+        // Allow main.js to control the "No Marker" text
+        window.toggleNoMarker = (show) => {
+            if(show) notFound.classList.add('showMsg');
+            else notFound.classList.remove('showMsg');
+        };
 
         intro.addEventListener('click', () => {
             intro.style.opacity = '0';
