@@ -180,6 +180,27 @@
             font-size: 0.8rem; backdrop-filter: blur(10px);
             pointer-events: none; opacity: 0; transition: opacity 0.3s ease;
         }
+        #lessonCard {
+            position: absolute; left: 50%; bottom: 112px; transform: translateX(-50%) translateY(10px);
+            width: min(88vw, 440px); max-height: 27vh; overflow: auto; box-sizing: border-box;
+            padding: 15px 17px; border-radius: 16px;
+            background: rgba(10, 12, 16, 0.78); border: 1px solid rgba(255,255,255,0.18);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.28); backdrop-filter: blur(18px);
+            color: #f3f4f6; opacity: 0; visibility: hidden;
+            transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s;
+            pointer-events: none;
+        }
+        #lessonCard.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+        #lessonSubject { margin-bottom: 5px; color: #a5b4fc; font: 0.65rem 'JetBrains Mono', monospace; letter-spacing: 0.3px; }
+        #lessonTitle { margin: 0 0 7px; font-size: 1.12rem; line-height: 1.35; font-weight: 500; }
+        #lessonDescription { margin: 0; color: rgba(255,255,255,0.82); font-size: 0.78rem; line-height: 1.55; font-weight: 300; }
+        #lessonFacts { margin: 9px 0 0; padding-left: 17px; color: rgba(255,255,255,0.72); font-size: 0.72rem; line-height: 1.5; }
+        #lessonFacts li + li { margin-top: 3px; }
+        @media (max-height: 650px) {
+            #lessonCard { bottom: 95px; max-height: 24vh; padding: 11px 13px; }
+            #lessonTitle { font-size: 1rem; }
+            #lessonDescription, #lessonFacts { font-size: 0.68rem; }
+        }
 
         @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
@@ -285,6 +306,12 @@
 
     <div id="arUI">
         <div id="noMarkerMsg">ไม่พบ Marker ในกล้อง</div>
+        <section id="lessonCard" aria-live="polite" aria-label="ข้อมูลประกอบการเรียนรู้">
+            <div id="lessonSubject"></div>
+            <h2 id="lessonTitle"></h2>
+            <p id="lessonDescription"></p>
+            <ul id="lessonFacts"></ul>
+        </section>
         <div class="scanFrame">
             <div class="corner tl"></div><div class="corner tr"></div>
             <div class="corner bl"></div><div class="corner br"></div>
@@ -307,11 +334,36 @@
         const log = document.getElementById('sysLog');
         const btnStop = document.getElementById('btnStop');
         const notFound = document.getElementById('noMarkerMsg');
+        const lessonCard = document.getElementById('lessonCard');
+        const lessonSubject = document.getElementById('lessonSubject');
+        const lessonTitle = document.getElementById('lessonTitle');
+        const lessonDescription = document.getElementById('lessonDescription');
+        const lessonFacts = document.getElementById('lessonFacts');
 
-        // Allow main.js to control the "No Marker" text
+        // Allow main.js to control the "No Marker" text and educational card.
         window.toggleNoMarker = (show) => {
             if(show) notFound.classList.add('showMsg');
             else notFound.classList.remove('showMsg');
+        };
+
+        window.showARInfo = (item) => {
+            lessonSubject.textContent = item.subject || 'AR LESSON';
+            lessonTitle.textContent = item.title || item.id || 'Learning material';
+            lessonDescription.textContent = item.description || '';
+            lessonFacts.replaceChildren();
+            (Array.isArray(item.facts) ? item.facts : []).forEach((fact) => {
+                const li = document.createElement('li');
+                li.textContent = fact;
+                lessonFacts.appendChild(li);
+            });
+            lessonCard.dataset.targetId = item.id || '';
+            lessonCard.classList.add('show');
+            window.toggleNoMarker(false);
+        };
+
+        window.hideARInfo = (targetId) => {
+            if (lessonCard.dataset.targetId !== targetId) return;
+            lessonCard.classList.remove('show');
         };
 
         intro.addEventListener('click', () => {
