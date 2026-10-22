@@ -2,42 +2,45 @@
 
 A browser-based educational augmented-reality demo built with MindAR Image Tracking and Three.js. It runs as a static site, so it can be hosted on GitHub Pages without a backend or paid hosting.
 
+## Model-outsourcing architecture
+
+The renderer no longer needs to know where a model comes from. Each target in `content/manifest.json` describes the lesson and its provider query; `lib/model-provider.js` asks the public, keyless 3DAssets.dev catalogue for a matching GLB, validates the result URL, and hands it to the existing Three.js loader.
+
+`image target → lesson manifest → provider adapter → semantic candidate filter → GLB URL → Three.js normalization and rendering`
+
+- **Provider:** 3DAssets.dev public REST API. Searching and reading assets require no account, API key, paid plan, or backend.
+- **No secrets in the browser:** only anonymous read requests are made.
+- **Relevance guard:** the adapter only accepts a candidate when its metadata strongly matches the configured terms. It will not blindly display the first search result.
+- **Fallback:** if the provider is unavailable or has no confident match, the existing local GLB is used, so the AR demo still works.
+- **Provider swap:** model lookup is isolated in one module; another catalogue can be added without rewriting tracking/rendering.
+
+The provider is an optional first integration, not a guarantee that a catalogue contains every scientific model. Molecular diagrams and specific atomic structures may not exist in a general-purpose prop library; those use the bundled educational asset unless a strong match is found.
+
 ## How content is configured
 
-The target-to-model mapping lives in `content/manifest.json`. Each entry defines:
+Each entry in `content/manifest.json` defines:
 
-- `id` and `title`: content identifiers and loading label
-- `targetIndex`: the image target index in `markers/markers.mind`
-- `modelUrl`: a local GLB path or a direct public GLB URL
-- `scale`: uniform model scale
-- `rotationSpeed`: per-frame Y rotation speed; use `"rotate": false` to disable rotation
+- `id`, `title`, `subject`, `description`, `facts`: educational content
+- `targetIndex`: image target index in `markers/markers.mind`
+- `modelUrl`: bundled GLB fallback
+- `provider`, `providerQuery`, `providerMatchTerms`: optional external model lookup configuration
+- `displaySize`, `scale`, `rotationSpeed`: uniform fit size and animation
 
-To add or change a model, edit the manifest and make sure the target index corresponds to the target compiled into `markers/markers.mind`. The current project includes five precompiled image targets.
+The current project includes five precompiled image targets. The provider is queried at runtime; provider models are not copied into the repository.
 
-## Using externally hosted models
-
-A model URL must point directly to a browser-loadable GLB file. The host must allow cross-origin requests (CORS), and you should verify the model's license and attribution requirements before using it. External hosts may change URLs, impose rate limits, or remove files, so local assets are more reliable for a portfolio demo.
-
-This is a static frontend: **never put private API keys or secrets in client-side files**. The manifest supports direct model URLs; it does not currently search a model catalog or call a model-provider API automatically.
-
-## Current limitations
+## Limitations and next steps
 
 - Image tracking uses the existing compiled targets in `markers/markers.mind`; this is not arbitrary textbook-page recognition.
-- Tracking quality depends on target image quality, lighting, camera permissions, and the device/browser.
-- A public model URL can fail because of CORS, file availability, format, or licensing restrictions.
+- A general-purpose model catalogue may not contain accurate educational molecules or atoms, so the local fallback remains necessary for those lessons.
+- Tracking quality depends on target image quality, lighting, camera permissions, and device/browser.
+- A public model URL can fail because of CORS, format, or provider availability. The adapter fails safely to the bundled model.
 
 ## Running locally
 
 Serve the project over HTTP (for example, with VS Code Live Server or Python's local HTTP server) and open it in a browser. Camera access generally requires HTTPS or localhost. GitHub Pages provides HTTPS when deployed.
 
+## Mobile presentation and model normalization
 
-## Mobile presentation and learning content
+The renderer uses MindAR's documented starting values for tracking smoothing. Each target can define educational text that appears in a compact mobile overlay.
 
-The AR renderer uses MindAR's image tracking filter with `filterMinCF: 0.001` and `filterBeta: 1000`, its documented default starting values. Filter tuning balances image jitter against lag; fast camera movement and low-detail markers can still affect stability.
-
-Each manifest target can define `subject`, `description`, and a `facts` array. These appear in a compact mobile overlay when the corresponding image target is recognized. Model scale remains uniform; apparent on-screen size naturally changes with the tracked marker's distance and perspective.
-
-
-## Model normalization
-
-Imported GLB scenes are measured with a Three.js bounding box, uniformly fitted to each manifest target's `displaySize`, and centered under a pivot group. This prevents wildly different source-model dimensions and off-center origins from dominating the marker view. Uniform fitting preserves proportions; it does not alter the source geometry. Per-target display size is tuned in `content/manifest.json`.
+Imported GLB scenes are measured with a Three.js bounding box, uniformly fitted to each manifest target's `displaySize`, and centered under a pivot group. Uniform fitting preserves proportions; it does not alter source geometry.
