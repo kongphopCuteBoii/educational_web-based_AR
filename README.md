@@ -36,3 +36,8 @@ Serve the project over HTTP (for example, with VS Code Live Server or Python's l
 The AR renderer uses MindAR's image tracking filter with `filterMinCF: 0.001` and `filterBeta: 1000`, its documented default starting values. Filter tuning balances image jitter against lag; fast camera movement and low-detail markers can still affect stability.
 
 Each manifest target can define `subject`, `description`, and a `facts` array. These appear in a compact mobile overlay when the corresponding image target is recognized. Model scale remains uniform; apparent on-screen size naturally changes with the tracked marker's distance and perspective.
+
+
+## Model normalization
+
+Imported GLB scenes are measured with a Three.js bounding box, uniformly fitted to each manifest target's `displaySize`, and centered under a pivot group. This prevents wildly different source-model dimensions and off-center origins from dominating the marker view. Uniform fitting preserves proportions; it does not alter the source geometry. Per-target display size is tuned in `content/manifest.json`.
