@@ -18,7 +18,8 @@ concurrency:
 jobs:
   deploy:
     environment:
-      name: github-pages
+      # Keep the preview branch separate from the protected production environment.
+      name: ${{ github.ref_name == 'feat/data-driven-ar-content' && 'github-pages-preview' || 'github-pages' }}
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
