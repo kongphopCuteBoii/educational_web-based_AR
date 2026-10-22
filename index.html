@@ -196,6 +196,8 @@
         #lessonDescription { margin: 0; color: rgba(255,255,255,0.82); font-size: 0.78rem; line-height: 1.55; font-weight: 300; }
         #lessonFacts { margin: 9px 0 0; padding-left: 17px; color: rgba(255,255,255,0.72); font-size: 0.72rem; line-height: 1.5; }
         #lessonFacts li + li { margin-top: 3px; }
+        #lessonModelSource { display: none; margin-top: 8px; font: 0.58rem 'JetBrains Mono', monospace; color: rgba(255,255,255,0.48); }
+        #lessonModelSource a { color: #a5b4fc; pointer-events: auto; }
         @media (max-height: 650px) {
             #lessonCard { bottom: 95px; max-height: 24vh; padding: 11px 13px; }
             #lessonTitle { font-size: 1rem; }
@@ -311,6 +313,7 @@
             <h2 id="lessonTitle"></h2>
             <p id="lessonDescription"></p>
             <ul id="lessonFacts"></ul>
+            <div id="lessonModelSource"></div>
         </section>
         <div class="scanFrame">
             <div class="corner tl"></div><div class="corner tr"></div>
@@ -339,6 +342,7 @@
         const lessonTitle = document.getElementById('lessonTitle');
         const lessonDescription = document.getElementById('lessonDescription');
         const lessonFacts = document.getElementById('lessonFacts');
+        const lessonModelSource = document.getElementById('lessonModelSource');
 
         // Allow main.js to control the "No Marker" text and educational card.
         window.toggleNoMarker = (show) => {
@@ -356,6 +360,23 @@
                 li.textContent = fact;
                 lessonFacts.appendChild(li);
             });
+            lessonModelSource.replaceChildren();
+            const sourceLabel = document.createElement('span');
+            sourceLabel.textContent = item.modelSource === '3DAssets.dev'
+                ? `3D model: ${item.modelAssetName || '3DAssets.dev'}`
+                : '3D model: bundled educational asset';
+            lessonModelSource.appendChild(sourceLabel);
+            if (item.modelAssetUrl) {
+                const link = document.createElement('a');
+                link.href = item.modelAssetUrl;
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                link.textContent = ' · source';
+                lessonModelSource.appendChild(link);
+            } else if (item.modelAttribution) {
+                sourceLabel.textContent += ` · ${item.modelAttribution}`;
+            }
+            lessonModelSource.style.display = 'block';
             lessonCard.dataset.targetId = item.id || '';
             lessonCard.classList.add('show');
             window.toggleNoMarker(false);
