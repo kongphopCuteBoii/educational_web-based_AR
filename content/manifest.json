@@ -14,7 +14,15 @@
         "โมเลกุลมีรูปทรงงอ โดยมุม H–O–H อยู่ที่ประมาณ 104.5°",
         "ความมีขั้วของน้ำช่วยให้เกิดแรงยึดเหนี่ยวระหว่างโมเลกุล"
       ],
-      "displaySize": 0.38
+      "displaySize": 0.38,
+      "provider": "3dassets",
+      "providerQuery": "water molecule H2O",
+      "providerMatchTerms": [
+        "water molecule",
+        "H2O",
+        "molecular structure"
+      ],
+      "providerMinimumScore": 4
     },
     {
       "id": "argon-atom",
@@ -30,7 +38,15 @@
         "อะตอมอาร์กอนที่เป็นกลางมีอิเล็กตรอน 18 ตัว",
         "การจัดเรียงอิเล็กตรอนตามชั้นพลังงานคือ 2, 8, 8"
       ],
-      "displaySize": 0.38
+      "displaySize": 0.38,
+      "provider": "3dassets",
+      "providerQuery": "argon atom electron shell",
+      "providerMatchTerms": [
+        "argon atom",
+        "electron shell",
+        "atomic model"
+      ],
+      "providerMinimumScore": 4
     },
     {
       "id": "saturn",
@@ -46,7 +62,15 @@
         "วงแหวนประกอบด้วยอนุภาคน้ำแข็ง ฝุ่น และเศษหิน",
         "ไม่มีพื้นผิวแข็งแบบโลกให้ยืนอยู่ได้"
       ],
-      "displaySize": 0.48
+      "displaySize": 0.48,
+      "provider": "3dassets",
+      "providerQuery": "Saturn planet ring model",
+      "providerMatchTerms": [
+        "Saturn planet",
+        "planet Saturn",
+        "Saturn"
+      ],
+      "providerMinimumScore": 4
     },
     {
       "id": "sun",
@@ -62,7 +86,15 @@
         "แสงอาทิตย์ใช้เวลาเดินทางมาถึงโลกประมาณ 8 นาที 20 วินาที",
         "แรงโน้มถ่วงของดวงอาทิตย์ช่วยยึดระบบสุริยะไว้ด้วยกัน"
       ],
-      "displaySize": 0.4
+      "displaySize": 0.4,
+      "provider": "3dassets",
+      "providerQuery": "Sun star astronomy model",
+      "providerMatchTerms": [
+        "Sun star",
+        "the Sun",
+        "solar model"
+      ],
+      "providerMinimumScore": 4
     },
     {
       "id": "camel",
@@ -78,7 +110,15 @@
         "ฝ่าเท้ากว้างช่วยกระจายน้ำหนักบนพื้นทราย",
         "อูฐประหยัดน้ำได้ดีเมื่อเทียบกับสัตว์เลี้ยงลูกด้วยนมหลายชนิด"
       ],
-      "displaySize": 0.45
+      "displaySize": 0.45,
+      "provider": "3dassets",
+      "providerQuery": "camel animal",
+      "providerMatchTerms": [
+        "camel",
+        "dromedary",
+        "bactrian camel"
+      ],
+      "providerMinimumScore": 4
     }
   ]
 }
