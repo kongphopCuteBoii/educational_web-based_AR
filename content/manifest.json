@@ -1,0 +1,44 @@
+{
+  "targets": [
+    {
+      "id": "water-molecule",
+      "title": "Water molecule",
+      "targetIndex": 0,
+      "modelUrl": "./models/h2o.glb",
+      "scale": 2,
+      "rotationSpeed": 0.01
+    },
+    {
+      "id": "argon-atom",
+      "title": "Argon atom",
+      "targetIndex": 1,
+      "modelUrl": "./models/ar18.glb",
+      "scale": 0.175,
+      "rotationSpeed": 0.01
+    },
+    {
+      "id": "saturn",
+      "title": "Saturn",
+      "targetIndex": 2,
+      "modelUrl": "./models/saturn.glb",
+      "scale": 0.3,
+      "rotationSpeed": 0.01
+    },
+    {
+      "id": "sun",
+      "title": "Sun",
+      "targetIndex": 3,
+      "modelUrl": "./models/sun.glb",
+      "scale": 5,
+      "rotationSpeed": 0.002
+    },
+    {
+      "id": "camel",
+      "title": "Camel",
+      "targetIndex": 4,
+      "modelUrl": "./models/camel_r.glb",
+      "scale": 0.5,
+      "rotationSpeed": 0.01
+    }
+  ]
+}
