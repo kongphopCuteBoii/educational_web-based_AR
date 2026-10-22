@@ -11,8 +11,9 @@ permissions:
   pages: write
   id-token: write
 
+# Keep a stuck preview attempt from blocking the production workflow.
 concurrency:
-  group: "pages"
+  group: ${{ github.ref_name == 'feat/data-driven-ar-content' && 'pages-preview' || 'pages' }}
   cancel-in-progress: false
 
 jobs:
