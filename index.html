@@ -216,7 +216,7 @@
         #catalogueQuery { flex:1; min-width:0; background:#181a21; color:#fff; border:1px solid #41434c; border-radius:12px; padding:12px; font:inherit; }
         #catalogueSearchBtn { border:0; border-radius:12px; padding:0 16px; background:#a5b4fc; color:#171827; font-weight:600; }
         #catalogueStatus { color:#b8bac6; font-size:.82rem; min-height:1.5em; margin:8px 0 12px; }
-        #catalogueGrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(145px,1fr)); gap:12px; }
+        #cataloguePreviewStatus { color:#b8bac6; font-size:.8rem; margin:8px 0; min-height:1.4em; }\n        #catalogueModelPreview { width:100%; height:280px; border:1px solid #343640; border-radius:14px; overflow:hidden; background:#11141b; margin:10px 0 18px; }\n        #catalogueModelPreview canvas { display:block; width:100%; height:100%; }\n        #catalogueGrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(145px,1fr)); gap:12px; }
         .assetCard { overflow:hidden; border:1px solid #343640; border-radius:14px; background:#15171d; min-width:0; }
         .assetPreview { width:100%; aspect-ratio:4/3; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#202431,#111318); color:#777d91; font-size:2rem; overflow:hidden; }
         .assetPreview img { width:100%; height:100%; object-fit:cover; }
@@ -340,12 +340,12 @@
                 <button id="catalogueSearchBtn" type="submit">Search</button>
             </form>
             <div id="catalogueStatus" role="status">Search the catalogue to browse candidate models.</div>
-            <div id="catalogueGrid"></div>
+            <h3 style="font-size:.95rem;font-weight:500;margin:14px 0 4px">Live model preview</h3>\n            <div id="cataloguePreviewStatus" role="status">Select a candidate to load its GLB into Three.js.</div>\n            <div id="catalogueModelPreview" aria-label="Selected 3D model preview"></div>\n            <div id="catalogueGrid"></div>
             <button id="catalogueMore" type="button">Load more</button>
             <p class="catalogueDisclaimer">External models are candidates from the catalogue. Selecting one does not bind it to a marker yet; marker integration is a separate step.</p>
         </div>
     </section>
-    <script type="module" src="./lib/catalogue-ui.js?v=7f557c04"></script>
+    <script type="module" src="./lib/catalogue-ui.js?v=ff6ef392"></script>
 
     <div id="arUI">
         <div id="noMarkerMsg">ไม่พบ Marker ในกล้อง</div>
