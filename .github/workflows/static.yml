@@ -14,7 +14,7 @@ permissions:
 # Keep a stuck preview attempt from blocking the production workflow.
 concurrency:
   group: ${{ github.ref_name == 'feat/data-driven-ar-content' && 'pages-preview' || 'pages' }}
-  cancel-in-progress: false
+  cancel-in-progress: ${{ github.ref_name == 'feat/data-driven-ar-content' }}
 
 jobs:
   deploy:
