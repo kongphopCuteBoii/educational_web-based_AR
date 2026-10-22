@@ -29,3 +29,10 @@ This is a static frontend: **never put private API keys or secrets in client-sid
 ## Running locally
 
 Serve the project over HTTP (for example, with VS Code Live Server or Python's local HTTP server) and open it in a browser. Camera access generally requires HTTPS or localhost. GitHub Pages provides HTTPS when deployed.
+
+
+## Mobile presentation and learning content
+
+The AR renderer uses MindAR's image tracking filter with `filterMinCF: 0.001` and `filterBeta: 1000`, its documented default starting values. Filter tuning balances image jitter against lag; fast camera movement and low-detail markers can still affect stability.
+
+Each manifest target can define `subject`, `description`, and a `facts` array. These appear in a compact mobile overlay when the corresponding image target is recognized. Model scale remains uniform; apparent on-screen size naturally changes with the tracked marker's distance and perspective.
