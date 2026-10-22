@@ -1,43 +1,61 @@
-# Simple workflow for deploying static content to GitHub Pages
+# Deploy the main site normally, and keep the feature branch available at /preview/.
 name: Deploy static content to Pages
 
 on:
-  # Runs on pushes targeting the default branch
   push:
-    branches: ["main"]
-
-  # Allows you to run this workflow manually from the Actions tab
+    branches: ["main", "feat/data-driven-ar-content"]
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
 concurrency:
   group: "pages"
   cancel-in-progress: false
 
 jobs:
-  # Single deploy job since we're just deploying
   deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout deployment ref
         uses: actions/checkout@v4
+        with:
+          path: source
+
+      - name: Checkout main for preview deployment
+        if: github.ref_name == 'feat/data-driven-ar-content'
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main-source
+
+      - name: Stage main site
+        if: github.ref_name == 'main'
+        run: |
+          mkdir -p site
+          rsync -a --exclude='.git' --exclude='.github' source/ site/
+
+      - name: Stage main site plus feature preview
+        if: github.ref_name == 'feat/data-driven-ar-content'
+        run: |
+          mkdir -p site/preview
+          rsync -a --exclude='.git' --exclude='.github' main-source/ site/
+          rsync -a --exclude='.git' --exclude='.github' source/ site/preview/
+          touch site/.nojekyll
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository
-          path: '.'
+          path: site
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
