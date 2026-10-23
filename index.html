@@ -18,7 +18,7 @@
       }
     }
     </script>
-    <script src="lib/main.js?v=camera-resolution-request-20261023-1845" type="module"></script>
+    <script src="lib/main.js?v=adaptive-camera-20261023-1852" type="module"></script>
     <script src="lib/viewer.js?v=ar-visible-list-20261023-1815" type="module"></script>
     <style>
         body {
@@ -28,11 +28,14 @@
             letter-spacing: -0.5px;
         }
         video {
-            position: absolute !important; top: 50% !important; left: 50% !important;
-            transform: translate(-50%, -50%) !important;
-            min-width: 100vw !important; min-height: 100vh !important;
-            width: auto !important; height: auto !important;
-            object-fit: cover !important; z-index: -2 !important;
+            position: absolute !important; inset: 0 !important;
+            width: 100vw !important; height: 100vh !important;
+            min-width: 0 !important; min-height: 0 !important;
+            object-fit: cover !important; object-position: center center !important;
+            z-index: -2 !important;
+        }
+        @supports (height: 100dvh) {
+            video { height: 100dvh !important; }
         }
         #container { width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; z-index: 1; }
         
