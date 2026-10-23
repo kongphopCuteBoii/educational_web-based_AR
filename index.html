@@ -19,7 +19,7 @@
       }
     }
     </script>
-    <script src="lib/main.js?v=fb5edcf7" type="module"></script>
+    <script src="lib/main.js?v=tracking-profiles-20261023" type="module"></script>
     <style>
         body {
             margin: 0; padding: 0; width: 100%; height: 100%;
@@ -104,6 +104,8 @@
             font-family: 'Prompt', sans-serif; font-weight: 400; letter-spacing: -1px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
+        .trackingProfileLabel { display:block; margin:0 0 7px; color:#8b8d98; font: .62rem 'JetBrains Mono',monospace; letter-spacing:1px; }
+        #trackingProfile { display:block; width:min(270px,85vw); margin:0 auto 12px; padding:10px 14px; border:1px solid rgba(255,255,255,.18); border-radius:12px; background:#17191f; color:#eee; font: .82rem 'Prompt',sans-serif; }
         #btnStart:hover { background: white; color: black; box-shadow: 0 0 40px rgba(255, 255, 255, 0.4); transform: translateY(-2px); }
         #btnStart:disabled { opacity: 0.7; cursor: wait; background: rgba(255,255,255,0.05); color: #ccc; box-shadow: none; transform: none; }
         
@@ -295,7 +297,13 @@
                 ขับเคลื่อนด้วย MindAR และ ThreeJS เพื่อการรองรับที่ครอบคลุมและเสถียรบนทุกแพลตฟอร์ม Tech Demo ตัวนี้แสดงให้เห็นถึงประสิทธิภาพการ Render 3D บนเว็บเบราว์เซอร์
             </p>
 
-            <button id="btnStart">เริ่มรันระบบ</button>
+            <label for="trackingProfile" class="trackingProfileLabel">AR TRACKING PROFILE</label>
+            <select id="trackingProfile" aria-label="AR tracking profile">
+                <option value="stable">Stable · less jitter</option>
+                <option value="balanced" selected>Balanced · default</option>
+                <option value="responsive">Responsive · less lag</option>
+            </select>
+                        <button id="btnStart">เริ่มรันระบบ</button>
             <button id="catalogueOpen" type="button">Browse 3D Model Catalogue</button>
             <div id="sysLog">System Standby</div>
 
