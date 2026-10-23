@@ -80,3 +80,9 @@ Recognition output should be normalized into a concise keyword or a small list o
 ## Known limitation / next implementation milestone
 
 The current Sketchfab search can display remote candidates and their interactive viewer, but remote download is not connected to the AR pipeline. The next milestone is a manifest-driven asset catalogue and a legal, repeatable acquisition workflow—not scraping third-party viewer internals.
+
+## Browser-only import bridge
+
+The catalogue now has a local **Import downloaded GLB into AR** control. This is the practical no-backend bridge when a user downloads a permitted `.glb` from Sketchfab or another creator: choose the file, let Three.js validate it, then send the same browser object URL through the existing `catalogue:model-selected` event so the existing MindAR anchor replacement code can load it. Only binary `.glb` files are supported by this bridge; a `.gltf` plus external texture files needs a ZIP-aware importer.
+
+This does **not** download from Sketchfab automatically. Public search results do not expose a direct model URL, and the authorized Sketchfab Download API requires authentication. Do not put a private API token in GitHub Pages source. A truly automatic Sketchfab download remains blocked until an official user-authenticated integration is configured or a backend securely handles the authorization flow. The local import path proves the preview-to-AR model handoff without compromising credentials.
