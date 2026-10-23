@@ -102,3 +102,10 @@ These values tune pose filtering; they do not change the marker's geometry or ma
 
 Catalogue-selected models now keep their authored orientation and do not inherit the starter lesson model's auto-rotation. The AR lesson card also displays the selected asset title/source instead of always calling it a bundled model.
 
+
+
+## Sketchfab catalogue acquisition handoff
+
+Sketchfab search cards now include creator metadata where the API provides it and expose a **Get GLB + import** action. The action opens the model's Sketchfab page and retains that result as the pending import context. After downloading a GLB through Sketchfab's permitted download flow, the user can return to the app and use **Import downloaded GLB into AR**; the imported model carries the selected result's title, creator/source and license metadata into the existing preview-to-AR pipeline.
+
+This is a user-assisted acquisition flow, not an automated Sketchfab download. Download availability is controlled by the model owner and Sketchfab account permissions. Search results do not expose a public direct GLB URL, so this workflow deliberately avoids scraping viewer data or bypassing authorization.
