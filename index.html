@@ -164,6 +164,13 @@
         .bl { bottom: -1px; left: -1px; border-width: 0 0 2px 2px; border-radius: 0 0 0 10px; }
         .br { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; border-radius: 0 0 10px 0; }
         
+        #arHint {
+            position: absolute; top: 15%; left: 50%; transform: translateX(-50%);
+            max-width: calc(100vw - 48px); padding: 9px 15px; border-radius: 24px;
+            background: rgba(0,0,0,0.62); border: 1px solid rgba(255,255,255,0.18);
+            color: #f3f4f6; font-size: 0.78rem; text-align: center;
+            pointer-events: none; backdrop-filter: blur(12px);
+        }
         #btnMotion {
             position: absolute; bottom: 108px; left: 50%; transform: translateX(-50%);
             background: rgba(12, 14, 18, 0.78); color: white;
@@ -295,6 +302,7 @@
 
     <div id="arUI">
         <div id="noMarkerMsg">ไม่พบ Marker ในกล้อง</div>
+        <div id="arHint">แตะโมเดลเพื่อให้มันตอบสนอง</div>
         <div class="scanFrame">
             <div class="corner tl"></div><div class="corner tr"></div>
             <div class="corner bl"></div><div class="corner br"></div>
@@ -319,6 +327,8 @@
         const btnStop = document.getElementById('btnStop');
         const btnMotion = document.getElementById('btnMotion');
         const notFound = document.getElementById('noMarkerMsg');
+        const arHint = document.getElementById('arHint');
+        window.showARHint = (message) => { arHint.textContent = message; };
 
         // Allow main.js to control the "No Marker" text
         window.toggleNoMarker = (show) => {
