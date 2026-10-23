@@ -18,8 +18,8 @@
       }
     }
     </script>
-    <script src="lib/main.js?v=ar-hit-test-fix-20261023-1010" type="module"></script>
-    <script src="lib/viewer.js?v=ar-hit-test-fix-20261023-1010" type="module"></script>
+    <script src="lib/main.js?v=ar-model-panel-20261023-1810" type="module"></script>
+    <script src="lib/viewer.js?v=ar-model-panel-20261023-1810" type="module"></script>
     <style>
         body {
             margin: 0; padding: 0; width: 100%; height: 100%;
@@ -114,6 +114,28 @@
             font-family: 'Prompt', sans-serif; font-weight: 300;
         }
         #btnExplore:hover { background: rgba(255,255,255,0.1); }
+        #arModelPanel {
+            position: fixed; z-index: 30; top: 50%; right: 12px; transform: translateY(-50%);
+            width: min(148px, 38vw); display: none; flex-direction: column; gap: 8px;
+            padding: 10px; border: 1px solid #ffffff30; border-radius: 16px;
+            background: rgba(12,14,18,.78); backdrop-filter: blur(14px);
+            box-sizing: border-box; pointer-events: auto;
+        }
+        #arModelPanel .panelTitle { color: #cbd5e1; font-size: .68rem; letter-spacing: .04em; margin-bottom: 2px; }
+        .arModelChoice {
+            display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+            width: 100%; padding: 9px 10px; border-radius: 10px;
+            border: 1px solid #ffffff22; background: #ffffff0b; color: #f3f4f6;
+            font: inherit; font-size: .8rem; text-align: left; cursor: pointer;
+        }
+        .arModelChoice small { color: #9ca3af; font-size: .65rem; }
+        .arModelChoice.tracked { border-color: #8de4b5; background: #8de4b51c; }
+        .arModelChoice:disabled { opacity: .4; cursor: default; }
+        @media (max-width: 600px) {
+            #arModelPanel { top: auto; right: 8px; bottom: 18px; transform: none; width: 132px; max-height: 45vh; overflow-y: auto; }
+            #arModelPanel .panelTitle { font-size: .62rem; }
+            .arModelChoice { padding: 8px; font-size: .74rem; }
+        }
         #modelViewer {
             position: fixed; inset: 0; z-index: 200; display: none;
             background: #101114; color: #f3f4f6; font-family: 'Prompt', sans-serif;
@@ -348,6 +370,14 @@
             <div class="corner bl"></div><div class="corner br"></div>
         </div>
         <button id="btnMotion" type="button" aria-pressed="true">พักการหมุน</button>
+        <div id="arModelPanel" aria-label="โมเดลที่ตรวจพบ">
+            <div class="panelTitle">โมเดลที่ตรวจพบ</div>
+            <button class="arModelChoice" data-model="h2o" disabled>H₂O <small>ไม่พบ Marker</small></button>
+            <button class="arModelChoice" data-model="ar18" disabled>AR18 <small>ไม่พบ Marker</small></button>
+            <button class="arModelChoice" data-model="saturn" disabled>Saturn <small>ไม่พบ Marker</small></button>
+            <button class="arModelChoice" data-model="sun" disabled>Sun <small>ไม่พบ Marker</small></button>
+            <button class="arModelChoice" data-model="camel" disabled>Camel <small>ไม่พบ Marker</small></button>
+        </div>
         <button id="btnStop">จบการทำงาน</button>
     </div>
 
