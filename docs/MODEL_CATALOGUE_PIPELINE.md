@@ -86,3 +86,18 @@ The current Sketchfab search can display remote candidates and their interactive
 The catalogue now has a local **Import downloaded GLB into AR** control. This is the practical no-backend bridge when a user downloads a permitted `.glb` from Sketchfab or another creator: choose the file, let Three.js validate it, then send the same browser object URL through the existing `catalogue:model-selected` event so the existing MindAR anchor replacement code can load it. Only binary `.glb` files are supported by this bridge; a `.gltf` plus external texture files needs a ZIP-aware importer.
 
 This does **not** download from Sketchfab automatically. Public search results do not expose a direct model URL, and the authorized Sketchfab Download API requires authentication. Do not put a private API token in GitHub Pages source. A truly automatic Sketchfab download remains blocked until an official user-authenticated integration is configured or a backend securely handles the authorization flow. The local import path proves the preview-to-AR model handoff without compromising credentials.
+
+
+## Tracking profiles and imported model pose
+
+The landing page exposes three MindAR image-tracking profiles for on-device comparison:
+
+| Profile | `filterMinCF` | `filterBeta` | Trade-off |
+| --- | ---: | ---: | --- |
+| Stable | 0.0005 | 500 | More smoothing, more lag during fast movement |
+| Balanced | 0.001 | 1000 | MindAR's existing default values |
+| Responsive | 0.005 | 1500 | Follows movement faster, may show more jitter |
+
+These values tune pose filtering; they do not change the marker's geometry or make the tracking engine track a smaller part of the image. A rigid GLB is not vertex-deformed by MindAR: when the estimated marker pose or scale fluctuates, the entire model can appear to tilt, stretch, or swim in perspective. Keep the printed target flat, well lit, and sharply visible, and compare the profiles while holding the target still before deciding which trade-off feels best.
+
+Catalogue-selected models now keep their authored orientation and do not inherit the starter lesson model's auto-rotation. The AR lesson card also displays the selected asset title/source instead of always calling it a bundled model.
