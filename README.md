@@ -4,17 +4,18 @@ A browser-based educational augmented-reality demo built with MindAR Image Track
 
 ## Model-outsourcing architecture
 
-The renderer no longer needs to know where a model comes from. Each target in `content/manifest.json` describes the lesson and its provider query; `lib/model-provider.js` asks the public, keyless 3DAssets.dev catalogue for a matching GLB, validates the result URL, and hands it to the existing Three.js loader.
+The renderer no longer needs to know where a model comes from. Lesson content lives in `content/manifest.json`; `lib/model-provider.js` handles bundled-model matching and public Sketchfab discovery. Search results are metadata and preview links, not direct GLB URLs.
 
-`image target → lesson manifest → provider adapter → semantic candidate filter → GLB URL → Three.js normalization and rendering`
+`image target → lesson manifest → bundled GLB fallback`  
+`keyword → public Sketchfab search → preview-only result or user-authorized GLB download/import → Three.js normalization and rendering`
 
-- **Provider:** 3DAssets.dev public REST API. Searching and reading assets require no account, API key, paid plan, or backend.
-- **No secrets in the browser:** only anonymous read requests are made.
-- **Relevance guard:** the adapter only accepts a candidate when its metadata strongly matches the configured terms. It will not blindly display the first search result.
-- **Fallback:** if the provider is unavailable or has no confident match, the existing local GLB is used, so the AR demo still works.
-- **Provider swap:** model lookup is isolated in one module; another catalogue can be added without rewriting tracking/rendering.
+- **Provider:** Sketchfab's public search endpoint, with no API key needed for discovery.
+- **No secrets in the browser:** the site performs anonymous search only; it does not embed an access token or client secret.
+- **Honest availability states:** bundled/direct GLB candidates are labelled separately from remote preview-only candidates.
+- **User-assisted acquisition:** Sketchfab results can open the model page; if the account and creator permit downloading, import the downloaded `.glb` in the catalogue. The app does not scrape viewer internals or claim automatic downloads.
+- **Fallback:** the five bundled educational models remain available if remote search fails.
 
-The provider is an optional first integration, not a guarantee that a catalogue contains every scientific model. Molecular diagrams and specific atomic structures may not exist in a general-purpose prop library; those use the bundled educational asset unless a strong match is found.
+Search is for discovery, not a guarantee of educational accuracy or download rights. Review each model's license and attribution before use.
 
 ## How content is configured
 
@@ -26,7 +27,7 @@ Each entry in `content/manifest.json` defines:
 - `provider`, `providerQuery`, `providerMatchTerms`: optional external model lookup configuration
 - `displaySize`, `scale`, `rotationSpeed`: uniform fit size and animation
 
-The current project includes five precompiled image targets. The provider is queried at runtime; provider models are not copied into the repository.
+The current project includes five precompiled image targets. Bundled models are local fallbacks. Remote Sketchfab results are discovered at runtime and are not copied into the repository.
 
 ## Limitations and next steps
 
