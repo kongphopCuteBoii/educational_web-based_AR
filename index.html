@@ -232,6 +232,30 @@
         .assetSelect { border:0; border-radius:8px; padding:7px 9px; background:#a5b4fc; color:#171827; font-size:.72rem; font-weight:600; }
         #catalogueMore { display:none; margin:16px auto; }
         .catalogueDisclaimer { color:#858895; font-size:.72rem; margin:14px 0; line-height:1.5; }
+        /* Google Lens-style contextual results: a compact camera overlay, not a full catalogue page. */
+        #catalogueOverlay.contextual { inset:auto 0 0; top:auto; max-height:min(46vh, 440px); padding:12px 14px calc(12px + env(safe-area-inset-bottom)); border-radius:20px 20px 0 0; background:rgba(10,12,17,.94); border:1px solid rgba(255,255,255,.14); border-bottom:0; box-shadow:0 -12px 42px rgba(0,0,0,.32); overflow-y:auto; }
+        #catalogueOverlay.contextual .catalogueWrap { max-width:none; }
+        #catalogueOverlay.contextual .catalogueHead { margin-bottom:8px; }
+        #catalogueOverlay.contextual .catalogueHead h2 { font-size:1rem; }
+        #catalogueOverlay.contextual #catalogueSearchForm { display:none; }
+        #catalogueOverlay.contextual #catalogueStatus { font-size:.72rem; margin:4px 0 8px; }
+        #catalogueOverlay.contextual #cataloguePreviewStatus,
+        #catalogueOverlay.contextual .catalogueWrap > h3,
+        #catalogueOverlay.contextual #catalogueModelPreview,
+        #catalogueOverlay.contextual .catalogueDisclaimer,
+        #catalogueOverlay.contextual #catalogueMore { display:none !important; }
+        #catalogueOverlay.contextual #catalogueGrid { display:flex; gap:10px; overflow-x:auto; padding:2px 1px 8px; scroll-snap-type:x mandatory; }
+        #catalogueOverlay.contextual .assetCard { flex:0 0 156px; scroll-snap-align:start; }
+        #catalogueOverlay.contextual .assetPreview { aspect-ratio:4/3; }
+        #catalogueOverlay.contextual .assetBody { padding:8px; }
+        #catalogueOverlay.contextual .assetTitle { font-size:.78rem; }
+        #catalogueOverlay.contextual .assetSummary { font-size:.66rem; -webkit-line-clamp:2; }
+        #catalogueOverlay.contextual .assetActions { align-items:stretch; flex-direction:column; }
+        #catalogueOverlay.contextual .assetSelect { width:100%; min-height:36px; }
+        #catalogueOverlay.contextual #catalogueClose { padding:6px 10px; font-size:.72rem; }
+        @media (min-width:700px) {
+            #catalogueOverlay.contextual { left:50%; right:auto; width:min(760px,94vw); transform:translateX(-50%); bottom:16px; border:1px solid rgba(255,255,255,.14); border-radius:20px; }
+        }
 
         @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
@@ -352,7 +376,7 @@
             <p class="catalogueDisclaimer">Select + Load previews a model and sends it to the AR viewer. Scan a supported marker to place it, or select another model to replace the current selection.</p>
         </div>
     </section>
-    <script type="module" src="./lib/catalogue-ui.js?v=7e07d0a7"></script>
+    <script type="module" src="./lib/catalogue-ui.js?v=0d836b84"></script>
 
     <div id="arUI">
         <div id="noMarkerMsg">ไม่พบ Marker ในกล้อง</div>
