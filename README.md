@@ -45,9 +45,3 @@ The renderer uses MindAR's documented starting values for tracking smoothing. Ea
 
 Imported GLB scenes are measured with a Three.js bounding box, uniformly fitted to each manifest target's `displaySize`, and centered under a pivot group. Uniform fitting preserves proportions; it does not alter source geometry.
 
-
-## Runtime catalogue acquisition status
-
-- Sketchfab search provides discovery and embedded previews. It does not provide a public direct GLB URL; downloading a Sketchfab asset programmatically still requires the platform's authenticated Download API.
-- NIH 3D supports direct lookup when a query contains an entry ID such as `3DPX-000000`. The provider inspects public entry metadata for GLB output files and exposes those direct URLs as selectable candidates. Actual loading remains subject to browser CORS and the entry's license.
-- If a source has no direct authorized GLB URL, use its details page or the browser-only local GLB import. Do not treat an embedded viewer as a downloadable model.
