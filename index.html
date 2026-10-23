@@ -18,7 +18,8 @@
       }
     }
     </script>
-    <script src="lib/main.js?v=camera-init-fix-20261023-0729" type="module"></script>
+    <script src="lib/main.js?v=static-ar-20261023-0750" type="module"></script>
+    <script src="lib/viewer.js?v=inspect-viewer-20261023-0750" type="module"></script>
     <style>
         body {
             margin: 0; padding: 0; width: 100%; height: 100%;
@@ -106,6 +107,38 @@
         #btnStart:hover { background: white; color: black; box-shadow: 0 0 40px rgba(255, 255, 255, 0.4); transform: translateY(-2px); }
         #btnStart:disabled { opacity: 0.7; cursor: wait; background: rgba(255,255,255,0.05); color: #ccc; box-shadow: none; transform: none; }
         
+        #btnExplore {
+            margin-top: 12px; background: transparent; color: #e5e7eb;
+            border: 1px solid rgba(255,255,255,0.25); padding: 13px 28px;
+            border-radius: 40px; font-size: 0.95rem; cursor: pointer;
+            font-family: 'Prompt', sans-serif; font-weight: 300;
+        }
+        #btnExplore:hover { background: rgba(255,255,255,0.1); }
+        #modelViewer {
+            position: fixed; inset: 0; z-index: 200; display: none;
+            background: #101114; color: #f3f4f6; font-family: 'Prompt', sans-serif;
+        }
+        #viewerCanvas { position: absolute; inset: 0; touch-action: none; }
+        #viewerTop {
+            position: absolute; top: 0; left: 0; right: 0; z-index: 2;
+            padding: 18px 18px 12px; display: flex; gap: 12px;
+            align-items: center; justify-content: space-between;
+            background: linear-gradient(#101114eF, #10111400);
+        }
+        #viewerTop strong { font-weight: 400; letter-spacing: .04em; }
+        #viewerControls {
+            position: absolute; z-index: 2; left: 16px; right: 16px; bottom: 20px;
+            display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px;
+            padding: 14px; border: 1px solid #ffffff20; border-radius: 18px;
+            background: #101114cc; backdrop-filter: blur(14px);
+        }
+        #viewerControls select, #viewerControls button, #viewerTop button {
+            color: #f3f4f6; background: #25272d; border: 1px solid #ffffff28;
+            border-radius: 24px; padding: 10px 14px; font: inherit;
+        }
+        #viewerControls select { max-width: 48%; }
+        #viewerHelp { width: 100%; color: #9ca3af; font-size: .75rem; text-align: center; }
+        #viewerStatus { color: #d1d5db; font-size: .78rem; }
         #sysLog {
             margin-top: 25px; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
             color: rgba(255, 255, 255, 0.6); text-transform: uppercase;
@@ -231,7 +264,8 @@
                 ขับเคลื่อนด้วย MindAR และ ThreeJS เพื่อการรองรับที่ครอบคลุมและเสถียรบนทุกแพลตฟอร์ม Tech Demo ตัวนี้แสดงให้เห็นถึงประสิทธิภาพการ Render 3D บนเว็บเบราว์เซอร์
             </p>
 
-            <button id="btnStart">เริ่มรันระบบ</button>
+            <button id="btnStart">เริ่มรันระบบ AR</button>
+            <button id="btnExplore" type="button">สำรวจโมเดล 3D · ไม่ใช้กล้อง</button>
             <div id="sysLog">System Standby</div>
 
             <div class="staffSec">
@@ -313,6 +347,28 @@
 
     <div id="container"></div>
 
+    <section id="modelViewer" aria-label="3D model explorer">
+        <div id="viewerCanvas"></div>
+        <div id="viewerTop">
+            <strong>3D OBJECT EXAMINATION</strong>
+            <button id="btnViewerClose" type="button">ปิด ✕</button>
+        </div>
+        <div id="viewerControls">
+            <select id="viewerModel" aria-label="เลือกโมเดล">
+                <option value="h2o">H₂O</option>
+                <option value="ar18">AR18</option>
+                <option value="saturn">Saturn</option>
+                <option value="sun">Sun</option>
+                <option value="camel">Camel</option>
+            </select>
+            <button id="viewerReset" type="button">รีเซ็ตมุมมอง</button>
+            <button id="viewerZoomOut" type="button" aria-label="ซูมออก">−</button>
+            <button id="viewerZoomIn" type="button" aria-label="ซูมเข้า">＋</button>
+            <span id="viewerStatus">กำลังเตรียมโมเดล…</span>
+            <div id="viewerHelp">ลากเพื่อหมุน · บีบ/กางสองนิ้วเพื่อซูม · ใช้ล้อเมาส์ได้</div>
+        </div>
+    </section>
+
     <script>
         const d = new Date();
         const dd = String(d.getDate()).padStart(2, '0');
@@ -323,6 +379,7 @@
         const intro = document.getElementById('introScreen');
         const landing = document.getElementById('landingPage');
         const btnStart = document.getElementById('btnStart');
+        const btnExplore = document.getElementById('btnExplore');
         const log = document.getElementById('sysLog');
         const btnStop = document.getElementById('btnStop');
         const btnMotion = document.getElementById('btnMotion');
@@ -343,6 +400,8 @@
                 landing.classList.add('visible');
             }, 800);
         });
+
+        btnExplore.addEventListener('click', () => window.openModelViewer && window.openModelViewer());
 
         btnStart.addEventListener('click', () => {
             btnStart.disabled = true;
@@ -366,12 +425,7 @@
             }
         });
 
-        btnMotion.addEventListener('click', () => {
-             const enabled = btnMotion.getAttribute('aria-pressed') !== 'true';
-             btnMotion.setAttribute('aria-pressed', String(enabled));
-             btnMotion.innerText = enabled ? 'พักการหมุน' : 'เล่นการหมุน';
-             if (window.setARMotion) window.setARMotion(enabled);
-        });
+        btnMotion.style.display = 'none';
 
         btnStop.addEventListener('click', () => {
              if(window.killAR) window.killAR();
