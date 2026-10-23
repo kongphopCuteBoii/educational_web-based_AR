@@ -101,3 +101,8 @@ The landing page exposes three MindAR image-tracking profiles for on-device comp
 These values tune pose filtering; they do not change the marker's geometry or make the tracking engine track a smaller part of the image. A rigid GLB is not vertex-deformed by MindAR: when the estimated marker pose or scale fluctuates, the entire model can appear to tilt, stretch, or swim in perspective. Keep the printed target flat, well lit, and sharply visible, and compare the profiles while holding the target still before deciding which trade-off feels best.
 
 Catalogue-selected models now keep their authored orientation and do not inherit the starter lesson model's auto-rotation. The AR lesson card also displays the selected asset title/source instead of always calling it a bundled model.
+
+
+## Runtime NIH 3D entry lookup
+
+Searching with an NIH 3D entry identifier (for example, `3DPX-123456`) now invokes the public entry metadata resolver. If the metadata exposes GLB output files, those URLs appear as selectable catalogue assets and the existing Three.js loader attempts to load them into preview and AR. This is best-effort: cross-origin policy, file format, and item license still apply. Ordinary Sketchfab search remains discovery/preview-only because direct downloads require authenticated authorization.
