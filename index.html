@@ -448,9 +448,9 @@
             });
             lessonModelSource.replaceChildren();
             const sourceLabel = document.createElement('span');
-            sourceLabel.textContent = item.modelSource === '3DAssets.dev'
-                ? `3D model: ${item.modelAssetName || '3DAssets.dev'}`
-                : '3D model: bundled educational asset';
+            sourceLabel.textContent = item.modelAssetName
+                ? `3D model: ${item.modelAssetName}`
+                : `3D model: ${item.modelSource || 'bundled educational asset'}`;
             lessonModelSource.appendChild(sourceLabel);
             if (item.modelAssetUrl) {
                 const link = document.createElement('a');
