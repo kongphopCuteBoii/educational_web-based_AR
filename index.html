@@ -19,7 +19,7 @@
     }
     </script>
     <script src="lib/main.js?v=static-ar-20261023-0751" type="module"></script>
-    <script src="lib/viewer.js?v=center-zoom-fix-20261023-0814" type="module"></script>
+    <script src="lib/viewer.js?v=sensitivity-controls-20261023-0821" type="module"></script>
     <style>
         body {
             margin: 0; padding: 0; width: 100%; height: 100%;
@@ -137,6 +137,12 @@
             border-radius: 24px; padding: 10px 14px; font: inherit;
         }
         #viewerControls select { max-width: 48%; }
+        .viewerSensitivity {
+            width: 100%; display: grid; grid-template-columns: auto minmax(100px, 1fr) 2.5rem;
+            align-items: center; gap: 10px; color: #cbd5e1; font-size: .76rem;
+        }
+        .viewerSensitivity input { width: 100%; accent-color: #e5e7eb; }
+        .viewerSensitivity output { text-align: right; font-family: 'JetBrains Mono', monospace; color: #f8fafc; }
         #viewerHelp { width: 100%; color: #9ca3af; font-size: .75rem; text-align: center; }
         #viewerStatus { color: #d1d5db; font-size: .78rem; }
         #sysLog {
@@ -365,7 +371,17 @@
             <button id="viewerZoomOut" type="button" aria-label="ซูมออก">−</button>
             <button id="viewerZoomIn" type="button" aria-label="ซูมเข้า">＋</button>
             <span id="viewerStatus">กำลังเตรียมโมเดล…</span>
-            <div id="viewerHelp">ลากเพื่อหมุน · บีบ/กางสองนิ้วเพื่อซูม · ใช้ล้อเมาส์ได้</div>
+            <label class="viewerSensitivity" for="viewerZoomSensitivity">
+                <span>ความไวซูม</span>
+                <input id="viewerZoomSensitivity" type="range" min="1" max="100" value="50">
+                <output id="viewerZoomValue">50</output>
+            </label>
+            <label class="viewerSensitivity" for="viewerPanSensitivity">
+                <span>ความไวเลื่อนกล้อง</span>
+                <input id="viewerPanSensitivity" type="range" min="1" max="100" value="50">
+                <output id="viewerPanValue">50</output>
+            </label>
+            <div id="viewerHelp">ลาก 1 นิ้วเพื่อหมุน · ใช้ 2 นิ้วเพื่อซูมและเลื่อนกล้อง</div>
         </div>
     </section>
 
