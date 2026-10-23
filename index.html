@@ -14,11 +14,12 @@
         "three": "https://unpkg.com/three@0.147.0/build/three.module.js",
         "three/addons/": "https://unpkg.com/three@0.147.0/examples/jsm/",
         "gltfloader": "https://unpkg.com/three@0.147.0/examples/jsm/loaders/GLTFLoader.js",
+        "dracoloader": "https://unpkg.com/three@0.147.0/examples/jsm/loaders/DRACOLoader.js",
         "mindar-image-three": "https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-three.prod.js"
       }
     }
     </script>
-    <script src="lib/main.js" type="module"></script>
+    <script src="lib/main.js?v=ar-catalogue-progress-20261023" type="module"></script>
     <style>
         body {
             margin: 0; padding: 0; width: 100%; height: 100%;
@@ -103,6 +104,8 @@
             font-family: 'Prompt', sans-serif; font-weight: 400; letter-spacing: -1px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
+        .trackingProfileLabel { display:block; margin:0 0 7px; color:#8b8d98; font: .62rem 'JetBrains Mono',monospace; letter-spacing:1px; }
+        #trackingProfile { display:block; width:min(270px,85vw); margin:0 auto 12px; padding:10px 14px; border:1px solid rgba(255,255,255,.18); border-radius:12px; background:#17191f; color:#eee; font: .82rem 'Prompt',sans-serif; }
         #btnStart:hover { background: white; color: black; box-shadow: 0 0 40px rgba(255, 255, 255, 0.4); transform: translateY(-2px); }
         #btnStart:disabled { opacity: 0.7; cursor: wait; background: rgba(255,255,255,0.05); color: #ccc; box-shadow: none; transform: none; }
         
@@ -180,6 +183,86 @@
             font-size: 0.8rem; backdrop-filter: blur(10px);
             pointer-events: none; opacity: 0; transition: opacity 0.3s ease;
         }
+        #lessonCard {
+            position: absolute; left: 50%; bottom: 112px; transform: translateX(-50%) translateY(10px);
+            width: min(88vw, 440px); max-height: 27vh; overflow: auto; box-sizing: border-box;
+            padding: 15px 17px; border-radius: 16px;
+            background: rgba(10, 12, 16, 0.78); border: 1px solid rgba(255,255,255,0.18);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.28); backdrop-filter: blur(18px);
+            color: #f3f4f6; opacity: 0; visibility: hidden;
+            transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s;
+            pointer-events: none;
+        }
+        #lessonCard.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+        #lessonSubject { margin-bottom: 5px; color: #a5b4fc; font: 0.65rem 'JetBrains Mono', monospace; letter-spacing: 0.3px; }
+        #lessonTitle { margin: 0 0 7px; font-size: 1.12rem; line-height: 1.35; font-weight: 500; }
+        #lessonDescription { margin: 0; color: rgba(255,255,255,0.82); font-size: 0.78rem; line-height: 1.55; font-weight: 300; }
+        #lessonFacts { margin: 9px 0 0; padding-left: 17px; color: rgba(255,255,255,0.72); font-size: 0.72rem; line-height: 1.5; }
+        #lessonFacts li + li { margin-top: 3px; }
+        #lessonModelSource { display: none; margin-top: 8px; font: 0.58rem 'JetBrains Mono', monospace; color: rgba(255,255,255,0.48); }
+        #lessonModelSource a { color: #a5b4fc; pointer-events: auto; }
+        @media (max-height: 650px) {
+            #lessonCard { bottom: 95px; max-height: 24vh; padding: 11px 13px; }
+            #lessonTitle { font-size: 1rem; }
+            #lessonDescription, #lessonFacts { font-size: 0.68rem; }
+        }
+
+
+        #catalogueOpen { margin:10px auto 0; display:block; background:transparent; border:1px solid rgba(255,255,255,.25); color:#eee; padding:11px 20px; border-radius:30px; font: .8rem 'Prompt',sans-serif; cursor:pointer; }
+        #catalogueOverlay { position:fixed; inset:0; z-index:100; display:none; overflow-y:auto; padding:20px 14px; box-sizing:border-box; background:rgba(5,7,11,.92); backdrop-filter:blur(18px); }
+        #catalogueOverlay.open { display:block; }
+        .catalogueWrap { max-width:980px; margin:0 auto; }
+        .catalogueHead { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }
+        .catalogueHead h2 { margin:0; font-size:1.35rem; font-weight:500; }
+        #catalogueClose,#catalogueMore { background:transparent; color:#fff; border:1px solid #555; border-radius:999px; padding:9px 14px; }
+        .catalogueSearch { display:flex; gap:8px; margin-bottom:10px; }
+        #catalogueQuery { flex:1; min-width:0; background:#181a21; color:#fff; border:1px solid #41434c; border-radius:12px; padding:12px; font:inherit; }
+        #catalogueSearchBtn { border:0; border-radius:12px; padding:0 16px; background:#a5b4fc; color:#171827; font-weight:600; }
+        #catalogueStatus { color:#b8bac6; font-size:.82rem; min-height:1.5em; margin:8px 0 12px; }
+        #cataloguePreviewStatus { color:#b8bac6; font-size:.8rem; margin:8px 0; min-height:1.4em; }
+        .catalogueImport { display:flex; flex-wrap:wrap; align-items:center; gap:10px; padding:12px; margin:8px 0; border:1px solid #343640; border-radius:12px; background:#15171d; }
+        .catalogueImport label { font-size:.8rem; color:#eee; }
+        .catalogueImport input { max-width:100%; color:#b8bac6; font: .72rem 'Prompt',sans-serif; }
+        .catalogueImport p { flex-basis:100%; margin:0; color:#858895; font-size:.7rem; line-height:1.45; }
+        #catalogueOverlay.contextual .catalogueImport { display:none; }
+        #catalogueModelPreview { width:100%; height:280px; border:1px solid #343640; border-radius:14px; overflow:hidden; background:#11141b; margin:10px 0 18px; }
+        #catalogueModelPreview canvas { display:block; width:100%; height:100%; }
+        #catalogueGrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(145px,1fr)); gap:12px; }
+        .assetCard { overflow:hidden; border:1px solid #343640; border-radius:14px; background:#15171d; min-width:0; }
+        .assetPreview { width:100%; aspect-ratio:4/3; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#202431,#111318); color:#777d91; font-size:2rem; overflow:hidden; }
+        .assetPreview img { width:100%; height:100%; object-fit:cover; }
+        .assetBody { padding:10px; }
+        .assetTitle { font-size:.88rem; font-weight:500; line-height:1.35; margin:0 0 6px; overflow-wrap:anywhere; }
+        .assetSummary { font-size:.72rem; color:#b6b8c3; line-height:1.45; margin:0 0 9px; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+        .assetActions { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+        .assetActions a { color:#a5b4fc; font-size:.72rem; }
+        .assetSelect { border:0; border-radius:8px; padding:7px 9px; background:#a5b4fc; color:#171827; font-size:.72rem; font-weight:600; }
+        #catalogueMore { display:none; margin:16px auto; }
+        .catalogueDisclaimer { color:#858895; font-size:.72rem; margin:14px 0; line-height:1.5; }
+        /* Google Lens-style contextual results: a compact camera overlay, not a full catalogue page. */
+        #catalogueOverlay.contextual { inset:auto 0 0; top:auto; max-height:min(46vh, 440px); padding:12px 14px calc(12px + env(safe-area-inset-bottom)); border-radius:20px 20px 0 0; background:rgba(10,12,17,.94); border:1px solid rgba(255,255,255,.14); border-bottom:0; box-shadow:0 -12px 42px rgba(0,0,0,.32); overflow-y:auto; }
+        #catalogueOverlay.contextual .catalogueWrap { max-width:none; }
+        #catalogueOverlay.contextual .catalogueHead { margin-bottom:8px; }
+        #catalogueOverlay.contextual .catalogueHead h2 { font-size:1rem; }
+        #catalogueOverlay.contextual #catalogueSearchForm { display:none; }
+        #catalogueOverlay.contextual #catalogueStatus { font-size:.72rem; margin:4px 0 8px; }
+        #catalogueOverlay.contextual #cataloguePreviewStatus,
+        #catalogueOverlay.contextual .catalogueWrap > h3,
+        #catalogueOverlay.contextual #catalogueModelPreview,
+        #catalogueOverlay.contextual .catalogueDisclaimer,
+        #catalogueOverlay.contextual #catalogueMore { display:none !important; }
+        #catalogueOverlay.contextual #catalogueGrid { display:flex; gap:10px; overflow-x:auto; padding:2px 1px 8px; scroll-snap-type:x mandatory; }
+        #catalogueOverlay.contextual .assetCard { flex:0 0 156px; scroll-snap-align:start; }
+        #catalogueOverlay.contextual .assetPreview { aspect-ratio:4/3; }
+        #catalogueOverlay.contextual .assetBody { padding:8px; }
+        #catalogueOverlay.contextual .assetTitle { font-size:.78rem; }
+        #catalogueOverlay.contextual .assetSummary { font-size:.66rem; -webkit-line-clamp:2; }
+        #catalogueOverlay.contextual .assetActions { align-items:stretch; flex-direction:column; }
+        #catalogueOverlay.contextual .assetSelect { width:100%; min-height:36px; }
+        #catalogueOverlay.contextual #catalogueClose { padding:6px 10px; font-size:.72rem; }
+        @media (min-width:700px) {
+            #catalogueOverlay.contextual { left:50%; right:auto; width:min(760px,94vw); transform:translateX(-50%); bottom:16px; border:1px solid rgba(255,255,255,.14); border-radius:20px; }
+        }
 
         @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
@@ -214,7 +297,14 @@
                 ขับเคลื่อนด้วย MindAR และ ThreeJS เพื่อการรองรับที่ครอบคลุมและเสถียรบนทุกแพลตฟอร์ม Tech Demo ตัวนี้แสดงให้เห็นถึงประสิทธิภาพการ Render 3D บนเว็บเบราว์เซอร์
             </p>
 
-            <button id="btnStart">เริ่มรันระบบ</button>
+            <label for="trackingProfile" class="trackingProfileLabel">AR TRACKING PROFILE</label>
+            <select id="trackingProfile" aria-label="AR tracking profile">
+                <option value="stable" selected>Stable · less jitter</option>
+                <option value="balanced">Balanced · default</option>
+                <option value="responsive">Responsive · less lag</option>
+            </select>
+                        <button id="btnStart">เริ่มรันระบบ</button>
+            <button id="catalogueOpen" type="button">Browse 3D Model Catalogue</button>
             <div id="sysLog">System Standby</div>
 
             <div class="staffSec">
@@ -283,8 +373,34 @@
         </div>
     </div>
 
+    <section id="catalogueOverlay" aria-label="3D model catalogue">
+        <div class="catalogueWrap">
+            <div class="catalogueHead"><h2>3D Model Catalogue</h2><button id="catalogueClose" type="button">Close ✕</button></div>
+            <form class="catalogueSearch" id="catalogueSearchForm">
+                <input id="catalogueQuery" type="search" placeholder="Search models — e.g. water molecule, camel" autocomplete="off" required>
+                <button id="catalogueSearchBtn" type="submit">Search</button>
+            </form>
+            <div id="catalogueStatus" role="status">Search the catalogue to browse candidate models.</div>
+            <h3 style="font-size:.95rem;font-weight:500;margin:14px 0 4px">Live model preview</h3>
+            <div id="cataloguePreviewStatus" role="status">Select a candidate to preview it. To use a downloaded model, import a .glb file below.</div>
+            <div class="catalogueImport"><label for="catalogueGlbFile">Import downloaded GLB into AR</label><input id="catalogueGlbFile" type="file" accept=".glb,model/gltf-binary"><p>Download a permitted .glb from the model creator, then choose it here. This browser-only path does not store account tokens.</p></div>
+            <div id="catalogueModelPreview" aria-label="Selected 3D model preview"></div>
+            <div id="catalogueGrid"></div>
+            <button id="catalogueMore" type="button">Load more</button>
+            <p class="catalogueDisclaimer">Select + Load previews a model and sends it to the AR viewer. Scan a supported marker to place it, or select another model to replace the current selection.</p>
+        </div>
+    </section>
+    <script type="module" src="./lib/catalogue-ui.js?v=glb-import-20261023"></script>
+
     <div id="arUI">
         <div id="noMarkerMsg">ไม่พบ Marker ในกล้อง</div>
+        <section id="lessonCard" aria-live="polite" aria-label="ข้อมูลประกอบการเรียนรู้">
+            <div id="lessonSubject"></div>
+            <h2 id="lessonTitle"></h2>
+            <p id="lessonDescription"></p>
+            <ul id="lessonFacts"></ul>
+            <div id="lessonModelSource"></div>
+        </section>
         <div class="scanFrame">
             <div class="corner tl"></div><div class="corner tr"></div>
             <div class="corner bl"></div><div class="corner br"></div>
@@ -307,11 +423,54 @@
         const log = document.getElementById('sysLog');
         const btnStop = document.getElementById('btnStop');
         const notFound = document.getElementById('noMarkerMsg');
+        const lessonCard = document.getElementById('lessonCard');
+        const lessonSubject = document.getElementById('lessonSubject');
+        const lessonTitle = document.getElementById('lessonTitle');
+        const lessonDescription = document.getElementById('lessonDescription');
+        const lessonFacts = document.getElementById('lessonFacts');
+        const lessonModelSource = document.getElementById('lessonModelSource');
 
-        // Allow main.js to control the "No Marker" text
+        // Allow main.js to control the "No Marker" text and educational card.
         window.toggleNoMarker = (show) => {
             if(show) notFound.classList.add('showMsg');
             else notFound.classList.remove('showMsg');
+        };
+
+        window.showARInfo = (item) => {
+            lessonSubject.textContent = item.subject || 'AR LESSON';
+            lessonTitle.textContent = item.title || item.id || 'Learning material';
+            lessonDescription.textContent = item.description || '';
+            lessonFacts.replaceChildren();
+            (Array.isArray(item.facts) ? item.facts : []).forEach((fact) => {
+                const li = document.createElement('li');
+                li.textContent = fact;
+                lessonFacts.appendChild(li);
+            });
+            lessonModelSource.replaceChildren();
+            const sourceLabel = document.createElement('span');
+            sourceLabel.textContent = item.modelAssetName
+                ? `3D model: ${item.modelAssetName}`
+                : `3D model: ${item.modelSource || 'bundled educational asset'}`;
+            lessonModelSource.appendChild(sourceLabel);
+            if (item.modelAssetUrl) {
+                const link = document.createElement('a');
+                link.href = item.modelAssetUrl;
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                link.textContent = ' · source';
+                lessonModelSource.appendChild(link);
+            } else if (item.modelAttribution) {
+                sourceLabel.textContent += ` · ${item.modelAttribution}`;
+            }
+            lessonModelSource.style.display = 'block';
+            lessonCard.dataset.targetId = item.id || '';
+            lessonCard.classList.add('show');
+            window.toggleNoMarker(false);
+        };
+
+        window.hideARInfo = (targetId) => {
+            if (lessonCard.dataset.targetId !== targetId) return;
+            lessonCard.classList.remove('show');
         };
 
         intro.addEventListener('click', () => {
