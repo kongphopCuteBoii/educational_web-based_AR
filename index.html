@@ -164,6 +164,16 @@
         .bl { bottom: -1px; left: -1px; border-width: 0 0 2px 2px; border-radius: 0 0 0 10px; }
         .br { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; border-radius: 0 0 10px 0; }
         
+        #btnMotion {
+            position: absolute; bottom: 108px; left: 50%; transform: translateX(-50%);
+            background: rgba(12, 14, 18, 0.78); color: white;
+            border: 1px solid rgba(255,255,255,0.22); padding: 10px 22px;
+            border-radius: 30px; font-size: 0.82rem; font-weight: 400;
+            pointer-events: auto; cursor: pointer; backdrop-filter: blur(15px);
+            font-family: 'Prompt', sans-serif;
+        }
+        #btnMotion:active { background: rgba(255,255,255,0.18); }
+
         #btnStop {
             position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%);
             background: rgba(0, 0, 0, 0.8); /* Glossy Black */
@@ -289,6 +299,7 @@
             <div class="corner tl"></div><div class="corner tr"></div>
             <div class="corner bl"></div><div class="corner br"></div>
         </div>
+        <button id="btnMotion" type="button" aria-pressed="true">พักการหมุน</button>
         <button id="btnStop">จบการทำงาน</button>
     </div>
 
@@ -306,6 +317,7 @@
         const btnStart = document.getElementById('btnStart');
         const log = document.getElementById('sysLog');
         const btnStop = document.getElementById('btnStop');
+        const btnMotion = document.getElementById('btnMotion');
         const notFound = document.getElementById('noMarkerMsg');
 
         // Allow main.js to control the "No Marker" text
@@ -342,6 +354,13 @@
                 log.innerText = "Error: Main module not found";
                 log.style.color = "#ff5555";
             }
+        });
+
+        btnMotion.addEventListener('click', () => {
+             const enabled = btnMotion.getAttribute('aria-pressed') !== 'true';
+             btnMotion.setAttribute('aria-pressed', String(enabled));
+             btnMotion.innerText = enabled ? 'พักการหมุน' : 'เล่นการหมุน';
+             if (window.setARMotion) window.setARMotion(enabled);
         });
 
         btnStop.addEventListener('click', () => {
