@@ -349,9 +349,16 @@
             #landingPage, #btnStart, #btnExplore, .staffCard { transition: none; }
             .introText, .introSub { animation: none; opacity: 1; }
         }
-        /* DB Heavent throughout; uses the locally installed font when available. */
+        /* Self-hosted DB Heavent Cond from assets/fonts. */
+        @font-face {
+            font-family: 'DB Heavent Cond';
+            src: url('./assets/fonts/db-heavent-cond.woff2') format('woff2');
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+        }
         body, body *, button, input, select, textarea {
-            font-family: 'DB Heavent', 'DB Heavent Med', sans-serif !important;
+            font-family: 'DB Heavent Cond', sans-serif !important;
         }
         #landingPage h1 { padding-left: 0; }
     </style>
