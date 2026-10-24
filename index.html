@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
-    
+
     <script type="importmap">
     {
       "imports": {
@@ -220,7 +220,7 @@
         }
         .copyright { margin-top: 16px; font-size: .67rem; color: #a5a194; font-family: 'JetBrains Mono', monospace; }
 
-        /* Camera and viewer rules below intentionally retain their original behavior and visuals. */
+        /* Camera and viewer rules below intentionally retain their original styles. */
         #arModelPanel {
             position: fixed; z-index: 30; top: 50%; right: 12px; transform: translateY(-50%);
             width: min(148px, 38vw); display: none; flex-direction: column; gap: 8px;
@@ -352,29 +352,15 @@
         /* Self-hosted DB Heavent Cond font family. */
         @font-face {
             font-family: 'DB Heavent Cond';
-            src: url('./assets/fonts/db-heavent-cond.woff2') format('woff2');
+            src: url('./assets/fonts/db-heaven.woff2') format('woff2');
             font-style: normal;
             font-weight: 400;
             font-display: swap;
         }
         @font-face {
             font-family: 'DB Heavent Cond';
-            src: url('./assets/fonts/db-heavent-cond-bold.woff2') format('woff2');
+            src: url('./assets/fonts/db-heavent-bold.woff2') format('woff2');
             font-style: normal;
-            font-weight: 700;
-            font-display: swap;
-        }
-        @font-face {
-            font-family: 'DB Heavent Cond';
-            src: url('./assets/fonts/db-heavent-cond-italic.woff2') format('woff2');
-            font-style: italic;
-            font-weight: 400;
-            font-display: swap;
-        }
-        @font-face {
-            font-family: 'DB Heavent Cond';
-            src: url('./assets/fonts/db-heavent-cond-bold-italic.woff2') format('woff2');
-            font-style: italic;
             font-weight: 700;
             font-display: swap;
         }
@@ -571,7 +557,7 @@
         btnStart.addEventListener('click', () => {
             btnStart.disabled = true;
             log.innerText = "Initializing Modules...";
-            
+
             if (window.runAR) {
                 window.runAR(
                     (msg) => { log.innerText = msg; },
