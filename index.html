@@ -21,11 +21,14 @@
     <script src="lib/main.js?v=adaptive-camera-device-orientation-20261023-1858" type="module"></script>
     <script src="lib/viewer.js?v=ar-visible-list-20261023-1815" type="module"></script>
     <style>
+
+        /* Landing page refresh — scoped to the landing and initial intro only.
+           AR camera overlays and the standalone model viewer retain their existing styles. */
         body {
             margin: 0; padding: 0; width: 100%; height: 100%;
             background-color: #101114; color: #f3f4f6;
             overflow: hidden; font-family: 'Prompt', sans-serif;
-            letter-spacing: -0.5px;
+            letter-spacing: 0;
         }
         video {
             position: absolute !important; inset: 0 !important;
@@ -34,89 +37,174 @@
             object-fit: cover !important; object-position: center center !important;
             z-index: -2 !important;
         }
-        @supports (height: 100dvh) {
-            video { height: 100dvh !important; }
-        }
+        @supports (height: 100dvh) { video { height: 100dvh !important; } }
         #container { width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; z-index: 1; }
-        
+
         .topHeader {
             position: fixed; top: 0; left: 0; width: 100%; padding: 15px 20px;
             box-sizing: border-box; display: flex; justify-content: space-between;
             z-index: 60; pointer-events: none;
-            font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
-            color: rgba(255, 255, 255, 0.3); text-transform: uppercase;
+            font-family: 'JetBrains Mono', monospace; font-size: .7rem;
+            color: rgba(255,255,255,.3); text-transform: uppercase;
         }
 
         #introScreen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #000; z-index: 100;
-            display: flex; flex-direction: column;
-            justify-content: center; align-items: center;
-            padding: 20px; box-sizing: border-box; text-align: center;
-            transition: opacity 0.8s ease; cursor: pointer;
+            position: fixed; inset: 0; width: 100%; height: 100%;
+            background: #171813; z-index: 100;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 24px; box-sizing: border-box; text-align: center;
+            transition: opacity .8s ease; cursor: pointer;
+        }
+        #introScreen::before {
+            content: ""; position: absolute; inset: 18px; border: 1px solid rgba(248,185,75,.28);
+            pointer-events: none;
         }
         .introText {
-            font-size: clamp(1rem, 4vw, 1.2rem); font-weight: 300; line-height: 1.6;
-            max-width: 600px; color: white; animation: fadeUp 1s ease-out forwards 0.5s; opacity: 0;
+            position: relative; font-size: clamp(1rem, 3.5vw, 1.2rem);
+            font-weight: 300; line-height: 1.9; max-width: 660px; color: #fff8e9;
+            animation: fadeUp 1s ease-out forwards .5s; opacity: 0;
         }
         .introSub {
-            margin-top: 40px; font-size: 0.85rem; color: #666; font-weight: 400;
+            position: relative; margin-top: 34px; font-size: .82rem;
+            color: #e5bb70; font-weight: 400;
             animation: pulse 2s infinite ease-in-out 1.5s forwards; opacity: 0;
         }
 
         #landingPage {
+            --paper: #fffdf8;
+            --ink: #23251f;
+            --muted: #6f7068;
+            --amber: #f5bd55;
+            --amber-dark: #d8962a;
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 50;
-            background: radial-gradient(circle at 50% 10%, #2c3038 0%, #050505 90%);
-            opacity: 0; pointer-events: none; transition: opacity 1s ease;
+            z-index: 50; background: var(--paper); color: var(--ink);
+            opacity: 0; pointer-events: none; transition: opacity .65s ease;
             overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch;
+            scrollbar-color: #e2b45c #fff8e9;
         }
-        .fogContainer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; overflow: hidden; }
-        .fogGlow {
-            position: absolute; top: -10%; left: 50%; transform: translateX(-50%);
-            width: 100vw; height: 100vw;
-            background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, rgba(0,0,0,0) 70%);
-            filter: blur(80px); animation: fogMove 15s infinite alternate ease-in-out;
-        }
+        #landingPage .fogContainer { display: none; }
 
         .contentWrap {
-            display: flex; flex-direction: column; align-items: center;
-            padding: 100px 20px 100px 20px; max-width: 800px; margin: 0 auto;
+            display: block; padding: 0 0 0; max-width: none; margin: 0 auto;
             min-height: 100vh; z-index: 2;
         }
-        h1 {
-            font-weight: 500; font-size: clamp(2.5rem, 6vw, 4.5rem); margin: 0; line-height: 1.1;
-            background: linear-gradient(180deg, #fff 0%, #a0a0a0 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            text-shadow: 0 20px 60px rgba(0,0,0,0.5); text-align: center; letter-spacing: -2px;
+        #landingPage h1 {
+            width: min(1120px, calc(100% - 64px)); box-sizing: border-box;
+            min-height: clamp(390px, 56vw, 660px); margin: 0 auto;
+            padding: clamp(44px, 8vw, 110px) 0;
+            display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
+            position: relative; isolation: isolate;
+            font-weight: 600; font-size: clamp(2.8rem, 7.1vw, 6rem); line-height: 1.06;
+            letter-spacing: -.055em; text-align: left; color: #25251f;
+            background: none; -webkit-text-fill-color: currentColor; text-shadow: none;
         }
+        #landingPage h1::before {
+            content: ""; position: absolute; z-index: -2; inset: 0 calc((1120px - 100vw) / 2);
+            background:
+                radial-gradient(ellipse at 76% 30%, rgba(255,242,171,.8), transparent 36%),
+                radial-gradient(ellipse at 84% 82%, rgba(214,137,24,.2), transparent 35%),
+                linear-gradient(118deg, #ffe58b 0%, #ffd458 46%, #f4b83e 100%);
+        }
+        #landingPage h1::after {
+            content: "WEBGL  /  THREE.JS  /  MINDAR";
+            position: absolute; top: 30px; right: 0;
+            font: 400 .65rem 'JetBrains Mono', monospace; letter-spacing: .12em;
+            color: rgba(49,42,22,.65);
+        }
+        #landingPage h1 br { display: block; }
         .advisor {
-            margin-top: 15px; font-size: clamp(1rem, 1.5vw, 1.2rem);
-            font-weight: 300; color: rgba(255, 255, 255, 0.8); text-align: center;
+            max-width: 1120px; margin: 0 auto; padding: 0 0;
+            font-size: .93rem; font-weight: 500; color: #4f5048; text-align: left;
+            line-height: 1.6; box-sizing: border-box;
         }
         .subTitle {
-            margin-top: 30px; margin-bottom: 40px; font-size: clamp(0.9rem, 1.5vw, 1rem);
-            color: #9ca3af; font-weight: 300; line-height: 1.7;
-            max-width: 600px; text-align: center;
+            max-width: 1120px; margin: 12px auto 0; padding: 0;
+            color: #6f7068; font-size: .88rem; font-weight: 300;
+            line-height: 1.95; text-align: left;
         }
+        #landingPage .advisor, #landingPage .subTitle,
+        #landingPage #btnStart, #landingPage #btnExplore, #landingPage #sysLog {
+            width: min(1120px, calc(100% - 64px));
+            box-sizing: border-box;
+        }
+        #landingPage .advisor { margin-top: 0; }
+        #landingPage .subTitle { margin-bottom: 27px; }
 
         #btnStart {
-            background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white; padding: 16px 50px; font-size: 1.1rem; border-radius: 50px;
-            cursor: pointer; backdrop-filter: blur(20px); transition: all 0.3s ease;
-            font-family: 'Prompt', sans-serif; font-weight: 400; letter-spacing: -1px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            background: #26271f; border: 1px solid #26271f; color: #fffdf8;
+            padding: 14px 25px; font-size: .95rem; border-radius: 3px;
+            cursor: pointer; transition: transform .2s, background .2s, box-shadow .2s;
+            font-family: 'Prompt', sans-serif; font-weight: 500; letter-spacing: 0;
+            box-shadow: 0 8px 18px rgba(39,34,20,.12);
         }
-        #btnStart:hover { background: white; color: black; box-shadow: 0 0 40px rgba(255, 255, 255, 0.4); transform: translateY(-2px); }
-        #btnStart:disabled { opacity: 0.7; cursor: wait; background: rgba(255,255,255,0.05); color: #ccc; box-shadow: none; transform: none; }
-        
+        #btnStart:hover { background: #46452f; transform: translateY(-2px); box-shadow: 0 12px 22px #27221422; }
+        #btnStart:disabled { opacity: .7; cursor: wait; box-shadow: none; transform: none; }
         #btnExplore {
-            margin-top: 12px; background: transparent; color: #e5e7eb;
-            border: 1px solid rgba(255,255,255,0.25); padding: 13px 28px;
-            border-radius: 40px; font-size: 0.95rem; cursor: pointer;
-            font-family: 'Prompt', sans-serif; font-weight: 300;
+            display: block; width: auto !important; margin: 10px 0 0 max(32px, calc((100% - 1120px) / 2));
+            background: transparent; color: #57564e; border: 1px solid #d9d5ca;
+            padding: 11px 18px; border-radius: 3px; font-size: .85rem; cursor: pointer;
+            font-family: 'Prompt', sans-serif; font-weight: 400; transition: background .2s, border-color .2s;
         }
-        #btnExplore:hover { background: rgba(255,255,255,0.1); }
+        #btnExplore:hover { background: #f8edcf; border-color: #d6a644; }
+        #sysLog {
+            margin: 13px auto 0; font-family: 'JetBrains Mono', monospace;
+            font-size: .65rem; color: #a18a60; text-transform: uppercase; letter-spacing: .08em;
+        }
+
+        .staffSec {
+            width: 100%; box-sizing: border-box; margin-top: 45px;
+            padding: 60px max(32px, calc((100% - 1120px) / 2)) 0;
+            background: #fffdf8;
+        }
+        .staffHead {
+            font-size: clamp(1.1rem, 2vw, 1.45rem); color: #26271f;
+            text-transform: none; letter-spacing: -.025em; margin: 0 0 30px;
+            text-align: left; position: relative; font-weight: 500;
+        }
+        .staffHead::after {
+            content: ''; position: absolute; bottom: -12px; left: 0;
+            transform: none; width: 44px; height: 3px; background: #efb545;
+        }
+        .staffGrid {
+            display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px; width: 100%;
+        }
+        .staffCard {
+            background: #fff; border: 1px solid #eeeadf; border-radius: 5px;
+            padding: 18px; display: flex; align-items: center; gap: 15px;
+            transition: transform .2s, box-shadow .2s, border-color .2s;
+        }
+        .staffCard:hover { transform: translateY(-3px); box-shadow: 0 12px 26px #33270d0c; border-color: #e5c782; }
+        .staffImg {
+            width: 76px; height: 76px; flex: 0 0 76px; border-radius: 4px;
+            object-fit: cover; border: 0; background: #f3e7c8;
+        }
+        .staffInfo { display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+        .staffInfo h3 { margin: 0; font-size: .96rem; font-weight: 500; color: #282920; line-height: 1.5; }
+        .engName { font-family: 'JetBrains Mono', monospace; font-size: .67rem; color: #8a887e; margin-top: 2px; overflow-wrap: anywhere; }
+        .staffInfo p { margin: 6px 0 0; font-size: .76rem; color: #9a722b; font-weight: 400; }
+
+        .specialThanks {
+            margin-top: 55px; width: 100%; padding: 30px 32px;
+            box-sizing: border-box; background: #f8c968;
+        }
+        .specialThanks .staffHead { max-width: 1120px; margin: 0 auto 25px; color: #332b1e; }
+        .specialThanks .staffHead::after { background: rgba(51,43,30,.35); }
+        .tagContainer {
+            max-width: 1120px; margin: 0 auto; display: flex; flex-wrap: wrap;
+            justify-content: flex-start; gap: 8px;
+        }
+        .techTag {
+            font-family: 'JetBrains Mono', monospace; font-size: .68rem; color: #51452d;
+            border: 1px solid #b98937; background: #ffda88; padding: 7px 11px; border-radius: 2px;
+        }
+        .footerInfo {
+            margin: 0; padding: 38px 0 30px; text-align: left; font-size: .82rem;
+            color: #817f74; font-weight: 300; line-height: 2; border-top: 0; width: 100%;
+        }
+        .copyright { margin-top: 16px; font-size: .67rem; color: #a5a194; font-family: 'JetBrains Mono', monospace; }
+
+        /* Camera and viewer rules below intentionally retain their original behavior and visuals. */
         #arModelPanel {
             position: fixed; z-index: 30; top: 50%; right: 12px; transform: translateY(-50%);
             width: min(148px, 38vw); display: none; flex-direction: column; gap: 8px;
@@ -132,11 +220,6 @@
         }
         .arModelChoice:hover { background: #ffffff12; }
         .arModelChoice small { display: none; }
-        @media (max-width: 600px) {
-            #arModelPanel { top: auto; right: 8px; bottom: 18px; transform: none; width: 132px; max-height: 45vh; overflow-y: auto; }
-            #arModelPanel .panelTitle { font-size: .62rem; }
-            .arModelChoice { padding: 8px; font-size: .74rem; }
-        }
         @media (max-width: 600px) {
             #arModelPanel { top: auto; right: 8px; bottom: 18px; transform: none; width: 132px; max-height: 45vh; overflow-y: auto; }
             #arModelPanel .panelTitle { font-size: .62rem; }
@@ -173,51 +256,6 @@
         .viewerSensitivity output { text-align: right; font-family: 'JetBrains Mono', monospace; color: #f8fafc; }
         #viewerHelp { width: 100%; color: #9ca3af; font-size: .75rem; text-align: center; }
         #viewerStatus { color: #d1d5db; font-size: .78rem; }
-        #sysLog {
-            margin-top: 25px; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
-            color: rgba(255, 255, 255, 0.6); text-transform: uppercase;
-        }
-
-        .staffSec { margin-top: 100px; width: 100%; }
-        .staffHead {
-            font-size: 0.8rem; color: rgba(255,255,255,0.4); text-transform: uppercase;
-            letter-spacing: 1px; margin-bottom: 30px; text-align: center; position: relative;
-        }
-        .staffHead::after {
-            content: ''; position: absolute; bottom: -12px; left: 50%;
-            transform: translateX(-50%); width: 30px; height: 1px; background: rgba(255,255,255,0.2);
-        }
-        .staffGrid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 15px; width: 100%;
-        }
-        .staffCard {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px; padding: 15px; display: flex; align-items: center; gap: 15px;
-            transition: background 0.3s ease;
-        }
-        .staffCard:hover { background: rgba(255,255,255,0.1); }
-        .staffImg {
-            width: 60px; height: 60px; border-radius: 50%; object-fit: cover;
-            border: 1px solid rgba(255,255,255,0.2); background: #222;
-        }
-        .staffInfo { display: flex; flex-direction: column; justify-content: center; }
-        .staffInfo h3 { margin: 0; font-size: 0.95rem; font-weight: 500; color: #fff; line-height: 1.2; }
-        .engName { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: #888; margin-top: 2px; }
-        .staffInfo p { margin: 5px 0 0 0; font-size: 0.75rem; color: #bbb; font-weight: 300; }
-
-        .specialThanks { margin-top: 60px; width: 100%; text-align: center; }
-        .tagContainer { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 15px; }
-        .techTag {
-            font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: rgba(255,255,255,0.6);
-            border: 1px solid rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 4px;
-        }
-        .footerInfo {
-            margin-top: 80px; margin-bottom: 40px; text-align: center; font-size: 0.85rem; color: #aaa;
-            font-weight: 300; line-height: 1.8; border-top: 1px solid rgba(255,255,255,0.05);
-            padding-top: 40px; width: 100%;
-        }
-        .copyright { margin-top: 20px; font-size: 0.7rem; color: #555; font-family: 'JetBrains Mono', monospace; }
 
         #arUI { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; display: none; pointer-events: none; }
         .scanFrame {
@@ -230,7 +268,6 @@
         .tr { top: -1px; right: -1px; border-width: 2px 2px 0 0; border-radius: 0 10px 0 0; }
         .bl { bottom: -1px; left: -1px; border-width: 0 0 2px 2px; border-radius: 0 0 0 10px; }
         .br { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; border-radius: 0 0 10px 0; }
-        
         #arHint {
             position: absolute; top: 15%; left: 50%; transform: translateX(-50%);
             max-width: calc(100vw - 48px); padding: 9px 15px; border-radius: 24px;
@@ -247,16 +284,13 @@
             font-family: 'Prompt', sans-serif;
         }
         #btnMotion:active { background: rgba(255,255,255,0.18); }
-
         #btnStop {
             position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8); /* Glossy Black */
-            color: white; border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(0, 0, 0, 0.8); color: white; border: 1px solid rgba(255,255,255,0.3);
             padding: 12px 30px; border-radius: 40px; font-size: 0.9rem; font-weight: 400;
             pointer-events: auto; cursor: pointer; backdrop-filter: blur(15px);
             font-family: 'Prompt', sans-serif; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
-
         #noMarkerMsg {
             position: absolute; top: 15%; left: 50%; transform: translateX(-50%);
             background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1);
@@ -266,11 +300,34 @@
         }
 
         @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
-        @keyframes fogMove { 0% { opacity: 0.4; transform: translateX(-50%) scale(1); } 100% { opacity: 0.6; transform: translateX(-50%) scale(1.1); } }
+        @keyframes pulse { 0%, 100% { opacity: .4; } 50% { opacity: 1; } }
         .hidden { display: none !important; }
         .visible { opacity: 1 !important; pointer-events: auto !important; }
         .showMsg { opacity: 1 !important; }
+
+        @media (min-width: 900px) {
+            #landingPage h1 { padding-left: max(0px, calc((100vw - 1120px) / 2)); }
+        }
+        @media (max-width: 760px) {
+            #landingPage h1 { width: calc(100% - 40px); min-height: 390px; font-size: clamp(2.5rem, 10vw, 4rem); }
+            #landingPage h1::before { inset: 0 -20px; }
+            #landingPage h1::after { top: 22px; right: 0; font-size: .55rem; }
+            #landingPage .advisor, #landingPage .subTitle,
+            #landingPage #btnStart, #landingPage #sysLog { width: calc(100% - 40px); }
+            #landingPage .subTitle { margin-top: 10px; }
+            #btnExplore { margin-left: 20px; }
+            .staffSec { margin-top: 38px; padding: 44px 20px 0; }
+            .staffGrid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+            .staffCard { padding: 14px; }
+            .staffImg { width: 64px; height: 64px; flex-basis: 64px; }
+            .specialThanks { margin-top: 40px; padding: 26px 20px; }
+            .specialThanks .staffHead, .tagContainer { max-width: none; }
+            .footerInfo { font-size: .77rem; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            #landingPage, #btnStart, #btnExplore, .staffCard { transition: none; }
+            .introText, .introSub { animation: none; opacity: 1; }
+        }
     </style>
 </head>
 <body>
