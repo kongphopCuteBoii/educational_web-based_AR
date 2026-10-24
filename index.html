@@ -321,8 +321,9 @@
         .visible { opacity: 1 !important; pointer-events: auto !important; }
         .showMsg { opacity: 1 !important; }
 
-        @media (min-width: 900px) {
-            #landingPage h1 { padding-left: max(0px, calc((100vw - 1120px) / 2)); }
+        /* Keep every hero element on the same left alignment line. */
+        @media (min-width: 761px) {
+            .heroCopy { padding-left: clamp(28px, 4vw, 54px); padding-right: clamp(28px, 4vw, 54px); }
         }
         @media (max-width: 760px) {
             .landingHero { grid-template-columns: minmax(0, 1fr); }
@@ -348,6 +349,11 @@
             #landingPage, #btnStart, #btnExplore, .staffCard { transition: none; }
             .introText, .introSub { animation: none; opacity: 1; }
         }
+        /* DB Heavent throughout; uses the locally installed font when available. */
+        body, body *, button, input, select, textarea {
+            font-family: 'DB Heavent', 'DB Heavent Med', sans-serif !important;
+        }
+        #landingPage h1 { padding-left: 0; }
     </style>
 </head>
 <body>
