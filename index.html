@@ -85,50 +85,66 @@
         #landingPage .fogContainer { display: none; }
 
         .contentWrap {
-            display: block; padding: 0 0 0; max-width: none; margin: 0 auto;
+            display: block; padding: 0; max-width: none; margin: 0 auto;
             min-height: 100vh; z-index: 2;
         }
+        .landingHero {
+            position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            align-items: stretch; min-height: clamp(520px, 58vw, 700px);
+            background: linear-gradient(125deg, #ffe58b 0%, #ffd458 54%, #f4b83e 100%);
+            overflow: hidden;
+        }
+        .heroCopy {
+            position: relative; z-index: 1; display: flex; flex-direction: column;
+            align-items: flex-start; justify-content: center;
+            padding: clamp(34px, 6vw, 84px) clamp(24px, 5vw, 76px);
+            min-width: 0;
+        }
+        .heroVisual { position: relative; min-height: 100%; overflow: hidden; background: #edb943; }
+        .heroVisual img {
+            display: block; width: 100%; height: 100%; min-height: clamp(520px, 58vw, 700px);
+            object-fit: cover; object-position: center; position: absolute; inset: 0;
+        }
+        .heroVisual::after {
+            content: ""; position: absolute; inset: 0;
+            background: linear-gradient(90deg, rgba(245,190,70,.25), transparent 28%), linear-gradient(0deg, rgba(24,23,18,.28), transparent 30%);
+            pointer-events: none;
+        }
+        .heroImageLabel {
+            position: absolute; z-index: 1; right: 22px; bottom: 20px;
+            font: 400 .62rem 'JetBrains Mono', monospace; letter-spacing: .1em;
+            color: #fff; text-shadow: 0 1px 8px #0008;
+        }
         #landingPage h1 {
-            width: min(1120px, calc(100% - 64px)); box-sizing: border-box;
-            min-height: clamp(390px, 56vw, 660px); margin: 0 auto;
-            padding: clamp(44px, 8vw, 110px) 0;
-            display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
-            position: relative; isolation: isolate;
-            font-weight: 600; font-size: clamp(2.8rem, 7.1vw, 6rem); line-height: 1.06;
+            width: 100%; box-sizing: border-box; min-height: 0; margin: 0;
+            padding: 48px 0 24px; display: block; position: relative;
+            font-weight: 600; font-size: clamp(2.8rem, 5.2vw, 5.2rem); line-height: 1.06;
             letter-spacing: -.055em; text-align: left; color: #25251f;
             background: none; -webkit-text-fill-color: currentColor; text-shadow: none;
         }
-        #landingPage h1::before {
-            content: ""; position: absolute; z-index: -2; inset: 0 calc((1120px - 100vw) / 2);
-            background:
-                radial-gradient(ellipse at 76% 30%, rgba(255,242,171,.8), transparent 36%),
-                radial-gradient(ellipse at 84% 82%, rgba(214,137,24,.2), transparent 35%),
-                linear-gradient(118deg, #ffe58b 0%, #ffd458 46%, #f4b83e 100%);
-        }
+        #landingPage h1::before { content: none; }
         #landingPage h1::after {
             content: "WEBGL  /  THREE.JS  /  MINDAR";
-            position: absolute; top: 30px; right: 0;
-            font: 400 .65rem 'JetBrains Mono', monospace; letter-spacing: .12em;
+            display: block; position: static; margin-top: 24px;
+            font: 400 .62rem 'JetBrains Mono', monospace; letter-spacing: .12em;
             color: rgba(49,42,22,.65);
         }
         #landingPage h1 br { display: block; }
         .advisor {
-            max-width: 1120px; margin: 0 auto; padding: 0 0;
+            width: 100%; margin: 0; padding: 0;
             font-size: .93rem; font-weight: 500; color: #4f5048; text-align: left;
             line-height: 1.6; box-sizing: border-box;
         }
         .subTitle {
-            max-width: 1120px; margin: 12px auto 0; padding: 0;
+            width: 100%; margin: 12px 0 25px; padding: 0;
             color: #6f7068; font-size: .88rem; font-weight: 300;
-            line-height: 1.95; text-align: left;
+            line-height: 1.95; text-align: left; box-sizing: border-box;
         }
-        #landingPage .advisor, #landingPage .subTitle,
-        #landingPage #btnStart, #landingPage #btnExplore, #landingPage #sysLog {
-            width: min(1120px, calc(100% - 64px));
-            box-sizing: border-box;
-        }
-        #landingPage .advisor { margin-top: 0; }
-        #landingPage .subTitle { margin-bottom: 27px; }
+        #landingPage .heroCopy #btnStart,
+        #landingPage .heroCopy #btnExplore,
+        #landingPage .heroCopy #sysLog { width: 100%; box-sizing: border-box; }
+        #landingPage .heroCopy #btnExplore { margin: 10px 0 0; }
+        #landingPage .heroCopy #sysLog { margin: 13px 0 0; }
 
         #btnStart {
             background: #26271f; border: 1px solid #26271f; color: #fffdf8;
@@ -309,20 +325,24 @@
             #landingPage h1 { padding-left: max(0px, calc((100vw - 1120px) / 2)); }
         }
         @media (max-width: 760px) {
-            #landingPage h1 { width: calc(100% - 40px); min-height: 390px; font-size: clamp(2.5rem, 10vw, 4rem); }
-            #landingPage h1::before { inset: 0 -20px; }
-            #landingPage h1::after { top: 22px; right: 0; font-size: .55rem; }
-            #landingPage .advisor, #landingPage .subTitle,
-            #landingPage #btnStart, #landingPage #sysLog { width: calc(100% - 40px); }
+            .landingHero { grid-template-columns: minmax(0, 1fr); }
+            .heroCopy { padding: 36px 22px 32px; }
+            #landingPage h1 { width: 100%; min-height: 0; padding: 28px 0 22px; font-size: clamp(2.6rem, 10vw, 4rem); }
+            #landingPage h1::after { margin-top: 18px; font-size: .55rem; }
+            .heroVisual { min-height: 0; height: clamp(260px, 68vw, 420px); }
+            .heroVisual img { min-height: 0; }
             #landingPage .subTitle { margin-top: 10px; }
-            #btnExplore { margin-left: 20px; }
-            .staffSec { margin-top: 38px; padding: 44px 20px 0; }
+            .staffSec { margin-top: 0; padding: 44px 20px 0; }
             .staffGrid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
             .staffCard { padding: 14px; }
             .staffImg { width: 64px; height: 64px; flex-basis: 64px; }
             .specialThanks { margin-top: 40px; padding: 26px 20px; }
             .specialThanks .staffHead, .tagContainer { max-width: none; }
             .footerInfo { font-size: .77rem; }
+        }
+        @media (min-width: 761px) and (max-width: 1050px) {
+            .heroCopy { padding: 42px 30px; }
+            #landingPage h1 { font-size: clamp(2.6rem, 5.5vw, 4rem); }
         }
         @media (prefers-reduced-motion: reduce) {
             #landingPage, #btnStart, #btnExplore, .staffCard { transition: none; }
@@ -348,16 +368,22 @@
         <div class="fogContainer"><div class="fogGlow"></div></div>
 
         <div class="contentWrap">
-            <h1>สื่อการเรียนรู้<br>Web-based AR</h1>
-            <div class="advisor">นำเสนอ ครูชาลิณี สุทธะมี</div>
-            
-            <p class="subTitle">
-                ขับเคลื่อนด้วย MindAR และ ThreeJS เพื่อการรองรับที่ครอบคลุมและเสถียรบนทุกแพลตฟอร์ม Tech Demo ตัวนี้แสดงให้เห็นถึงประสิทธิภาพการ Render 3D บนเว็บเบราว์เซอร์
-            </p>
-
-            <button id="btnStart">เริ่มรันระบบ AR</button>
-            <button id="btnExplore" type="button">สำรวจโมเดล 3D · ไม่ใช้กล้อง</button>
-            <div id="sysLog">System Standby</div>
+            <section class="landingHero">
+                <div class="heroCopy">
+                    <h1>สื่อการเรียนรู้<br>Web-based AR</h1>
+                    <div class="advisor">นำเสนอ ครูชาลิณี สุทธะมี</div>
+                    <p class="subTitle">
+                        ขับเคลื่อนด้วย MindAR และ ThreeJS เพื่อการรองรับที่ครอบคลุมและเสถียรบนทุกแพลตฟอร์ม Tech Demo ตัวนี้แสดงให้เห็นถึงประสิทธิภาพการ Render 3D บนเว็บเบราว์เซอร์
+                    </p>
+                    <button id="btnStart">เริ่มรันระบบ AR</button>
+                    <button id="btnExplore" type="button">สำรวจโมเดล 3D · ไม่ใช้กล้อง</button>
+                    <div id="sysLog">System Standby</div>
+                </div>
+                <div class="heroVisual">
+                    <img src="assets/ar-hero.jpg" alt="ทดลองใช้ Augmented Reality ผ่านสมาร์ตโฟน" fetchpriority="high">
+                    <span class="heroImageLabel">AUGMENTED REALITY / FIELD DEMO</span>
+                </div>
+            </section>
 
             <div class="staffSec">
                 <div class="staffHead">คณะผู้จัดทำ</div>
