@@ -100,12 +100,7 @@
             background: none; -webkit-text-fill-color: currentColor; text-shadow: none;
         }
         #landingPage h1::before { content: none; }
-        #landingPage h1::after {
-            content: "WEBGL  /  THREE.JS  /  MINDAR";
-            display: block; position: static; margin-top: 24px;
-            font: 400 .62rem 'JetBrains Mono', monospace; letter-spacing: .12em;
-            color: rgba(49,42,22,.65);
-        }
+        #landingPage h1::after { content: none; }
         #landingPage h1 br { display: block; }
         .advisor {
             width: 100%; margin: 0; padding: 0;
@@ -421,13 +416,12 @@
                         ขับเคลื่อนด้วย MindAR และ ThreeJS เพื่อการรองรับที่ครอบคลุมและเสถียรบนทุกแพลตฟอร์ม Tech Demo ตัวนี้แสดงให้เห็นถึงประสิทธิภาพการ Render 3D บนเว็บเบราว์เซอร์
                     </p>
                     <button id="btnStart">เริ่มรันระบบ AR</button>
-                    <button id="btnExplore" type="button">สำรวจโมเดล 3D · ไม่ใช้กล้อง</button>
                     <button id="btnMarkers" type="button">เปิดดู Marker</button>
+                    <button id="btnExplore" type="button">สำรวจโมเดล 3D · ไม่ใช้กล้อง</button>
                     <div id="sysLog">System Standby</div>
                 </div>
                 <div class="heroVisual">
                     <img src="assets/ar-hero.png" alt="ทดลองใช้ Augmented Reality ผ่านสมาร์ตโฟน" fetchpriority="high">
-                    <span class="heroImageLabel">AUGMENTED REALITY / FIELD DEMO</span>
                 </div>
             </section>
 
@@ -547,7 +541,6 @@
     <section id="modelViewer" aria-label="3D model explorer">
         <div id="viewerCanvas"></div>
         <div id="viewerTop">
-            <strong>3D OBJECT EXAMINATION</strong>
             <button id="btnViewerClose" type="button">ปิด ✕</button>
         </div>
         <div id="viewerControls">
