@@ -349,12 +349,33 @@
             #landingPage, #btnStart, #btnExplore, .staffCard { transition: none; }
             .introText, .introSub { animation: none; opacity: 1; }
         }
-        /* Self-hosted DB Heavent Cond from assets/fonts. */
+        /* Self-hosted DB Heavent Cond font family. */
         @font-face {
             font-family: 'DB Heavent Cond';
             src: url('./assets/fonts/db-heavent-cond.woff2') format('woff2');
             font-style: normal;
             font-weight: 400;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'DB Heavent Cond';
+            src: url('./assets/fonts/db-heavent-cond-bold.woff2') format('woff2');
+            font-style: normal;
+            font-weight: 700;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'DB Heavent Cond';
+            src: url('./assets/fonts/db-heavent-cond-italic.woff2') format('woff2');
+            font-style: italic;
+            font-weight: 400;
+            font-display: swap;
+        }
+        @font-face {
+            font-family: 'DB Heavent Cond';
+            src: url('./assets/fonts/db-heavent-cond-bold-italic.woff2') format('woff2');
+            font-style: italic;
+            font-weight: 700;
             font-display: swap;
         }
         body, body *, button, input, select, textarea {
