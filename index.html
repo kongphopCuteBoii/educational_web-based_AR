@@ -585,5 +585,61 @@
              setTimeout(() => { location.reload(); }, 1000);
         });
     </script>
+
+    <!-- BudouX: Thai-aware phrase line breaking (Apache-2.0) -->
+    <script src="https://unpkg.com/budoux/bundle/budoux-th.min.js"></script>
+    <script>
+      (() => {
+        const thaiText = /[\u0E00-\u0E7F]/;
+        const excluded = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT', 'TEXTAREA', 'INPUT', 'CODE', 'PRE', 'BUDOUX-TH']);
+        const wrapThaiText = (root) => {
+          const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+            acceptNode(node) {
+              if (!node.nodeValue || !thaiText.test(node.nodeValue)) return NodeFilter.FILTER_REJECT;
+              let parent = node.parentElement;
+              while (parent && parent !== root.parentElement) {
+                if (excluded.has(parent.tagName) || parent.isContentEditable) return NodeFilter.FILTER_REJECT;
+                parent = parent.parentElement;
+              }
+              return NodeFilter.FILTER_ACCEPT;
+            }
+          });
+          const nodes = [];
+          while (walker.nextNode()) nodes.push(walker.currentNode);
+          for (const node of nodes) {
+            if (!node.parentNode) continue;
+            const wrapper = document.createElement('budoux-th');
+            node.parentNode.insertBefore(wrapper, node);
+            wrapper.appendChild(node);
+          }
+        };
+
+        const start = () => {
+          if (!customElements.get('budoux-th')) return;
+          wrapThaiText(document.body);
+          const observer = new MutationObserver((records) => {
+            for (const record of records) {
+              for (const node of record.addedNodes) {
+                if (node.nodeType === Node.TEXT_NODE) {
+                  if (node.parentNode && thaiText.test(node.nodeValue || '') &&
+                      !excluded.has(node.parentElement?.tagName)) {
+                    const wrapper = document.createElement('budoux-th');
+                    node.parentNode.insertBefore(wrapper, node);
+                    wrapper.appendChild(node);
+                  }
+                } else if (node.nodeType === Node.ELEMENT_NODE && !excluded.has(node.tagName)) {
+                  wrapThaiText(node);
+                }
+              }
+            }
+          });
+          observer.observe(document.body, { childList: true, subtree: true });
+        };
+
+        if (customElements.get('budoux-th')) start();
+        else customElements.whenDefined('budoux-th').then(start);
+      })();
+    </script>
+
 </body>
 </html>
