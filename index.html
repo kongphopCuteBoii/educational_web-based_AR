@@ -162,6 +162,63 @@
             font-family: 'Prompt', sans-serif; font-weight: 400; transition: background .2s, border-color .2s;
         }
         #btnExplore:hover { background: #f8edcf; border-color: #d6a644; }
+
+        #btnMarkers {
+            display: block; width: 100%; margin: 10px 0 0;
+            padding: 11px 18px; border: 1px solid #d9d5ca; border-radius: 3px;
+            background: #fffdf8; color: #57564e; font: 400 1.377rem 'DB Heavent Cond', sans-serif;
+            cursor: pointer; text-align: center;
+        }
+        #btnMarkers:hover { background: #f3f0e8; }
+        #markerPage {
+            display: none; position: fixed; inset: 0; z-index: 100;
+            overflow-y: auto; background: #fffdf8; color: #26271f;
+            padding: clamp(20px, 4vw, 48px); box-sizing: border-box;
+        }
+        #markerPage.open { display: block; }
+        .markerPageHeader {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 16px; max-width: 1080px; margin: 0 auto 12px;
+        }
+        .markerPageHeader h2 {
+            margin: 0; font-size: clamp(2rem, 4vw, 3rem); line-height: 1.1;
+            font-weight: 700; color: #26271f;
+        }
+        #btnCloseMarkers {
+            flex: 0 0 auto; border: 1px solid #cfcbbf; border-radius: 3px;
+            padding: 9px 16px; background: transparent; color: #26271f;
+            font: inherit; font-size: 1.25rem; cursor: pointer;
+        }
+        #btnCloseMarkers:hover { background: #f0eee7; }
+        .markerPageNote {
+            max-width: 1080px; margin: 0 auto 24px; color: #6f7068;
+            font-size: 1.25rem; line-height: 1.3;
+        }
+        .markerGrid {
+            display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px; max-width: 1080px; margin: 0 auto;
+        }
+        .markerCard {
+            min-width: 0; border: 1px solid #dedbd2; background: #fff;
+            padding: 16px; box-sizing: border-box;
+        }
+        .markerCard img {
+            display: block; width: 100%; aspect-ratio: 1 / 1;
+            object-fit: contain; background: #fff; border: 0;
+        }
+        .markerCard h3 {
+            margin: 12px 0 0; font-size: 1.5rem; line-height: 1.2;
+            font-weight: 700; color: #26271f;
+        }
+        .markerCard p {
+            margin: 2px 0 0; color: #77756d; font-size: 1.05rem; line-height: 1.2;
+        }
+        @media (max-width: 560px) {
+            .markerPageHeader { align-items: flex-start; }
+            .markerGrid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+            .markerCard { padding: 12px; }
+            .markerCard img { max-height: 65vh; }
+        }
         #sysLog {
             margin: 13px auto 0; font-family: 'JetBrains Mono', monospace;
             font-size: 1.053rem; color: #a18a60; text-transform: uppercase; letter-spacing: .08em;
@@ -397,6 +454,7 @@
                     </p>
                     <button id="btnStart">เริ่มรันระบบ AR</button>
                     <button id="btnExplore" type="button">สำรวจโมเดล 3D · ไม่ใช้กล้อง</button>
+                    <button id="btnMarkers" type="button">เปิดดู Marker</button>
                     <div id="sysLog">System Standby</div>
                 </div>
                 <div class="heroVisual">
@@ -471,6 +529,36 @@
         </div>
     </div>
 
+    <section id="markerPage" aria-labelledby="markerPageTitle">
+        <header class="markerPageHeader">
+            <h2 id="markerPageTitle">เปิดดู Marker</h2>
+            <button id="btnCloseMarkers" type="button">กลับหน้าหลัก</button>
+        </header>
+        <p class="markerPageNote">ใช้ภาพ Marker เหล่านี้ส่องผ่านกล้องเพื่อเรียกโมเดล 3D ที่ตรงกัน</p>
+        <div class="markerGrid">
+            <article class="markerCard">
+                <img src="markers/0.png" alt="Marker 0 สำหรับโมเดล H2O" loading="lazy">
+                <h3>H₂O · Water</h3>
+                <p>Marker 0 · markers/0.png</p>
+            </article>
+            <article class="markerCard">
+                <img src="markers/1.png" alt="Marker 1 สำหรับโมเดล Argon" loading="lazy">
+                <h3>Argon</h3>
+                <p>Marker 1 · markers/1.png</p>
+            </article>
+            <article class="markerCard">
+                <img src="markers/2.png" alt="Marker 2 สำหรับโมเดล Sun" loading="lazy">
+                <h3>Sun</h3>
+                <p>Marker 2 · markers/2.png</p>
+            </article>
+            <article class="markerCard">
+                <img src="markers/3.png" alt="Marker 3 สำหรับโมเดล Camel" loading="lazy">
+                <h3>Camel</h3>
+                <p>Marker 3 · markers/3.png</p>
+            </article>
+        </div>
+    </section>
+
     <div id="arUI">
         <div id="noMarkerMsg">ไม่พบ Marker ในกล้อง</div>
         <div id="arHint">ส่อง Marker เพื่อแสดงโมเดล 3D</div>
@@ -531,6 +619,9 @@
         const landing = document.getElementById('landingPage');
         const btnStart = document.getElementById('btnStart');
         const btnExplore = document.getElementById('btnExplore');
+        const btnMarkers = document.getElementById('btnMarkers');
+        const markerPage = document.getElementById('markerPage');
+        const btnCloseMarkers = document.getElementById('btnCloseMarkers');
         const log = document.getElementById('sysLog');
         const btnStop = document.getElementById('btnStop');
         const btnMotion = document.getElementById('btnMotion');
@@ -553,6 +644,17 @@
         });
 
         btnExplore.addEventListener('click', () => window.openModelViewer && window.openModelViewer());
+
+        btnMarkers.addEventListener('click', () => {
+            markerPage.classList.add('open');
+            markerPage.scrollTop = 0;
+            btnCloseMarkers.focus();
+        });
+
+        btnCloseMarkers.addEventListener('click', () => {
+            markerPage.classList.remove('open');
+            btnMarkers.focus();
+        });
 
         btnStart.addEventListener('click', () => {
             btnStart.disabled = true;
