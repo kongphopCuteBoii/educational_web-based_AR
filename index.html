@@ -48,28 +48,6 @@
             color: rgba(255,255,255,.3); text-transform: uppercase;
         }
 
-        #introScreen {
-            position: fixed; inset: 0; width: 100%; height: 100%;
-            background: #171813; z-index: 100;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            padding: 24px; box-sizing: border-box; text-align: center;
-            transition: opacity .8s ease; cursor: pointer;
-        }
-        #introScreen::before {
-            content: ""; position: absolute; inset: 18px; border: 1px solid rgba(248,185,75,.28);
-            pointer-events: none;
-        }
-        .introText {
-            position: relative; font-size: clamp(1.62rem, 5.67vw, 1.944rem);
-            font-weight: 300; line-height: 1.037; max-width: 660px; color: #fff8e9;
-            animation: fadeUp 1s ease-out forwards .5s; opacity: 0;
-        }
-        .introSub {
-            position: relative; margin-top: 34px; font-size: 1.328rem;
-            color: #e5bb70; font-weight: 400;
-            animation: pulse 2s infinite ease-in-out 1.5s forwards; opacity: 0;
-        }
-
         #landingPage {
             --paper: #fffdf8;
             --ink: #23251f;
@@ -432,15 +410,7 @@
         <div>v0.51β</div>
     </header>
 
-    <div id="introScreen">
-        <div class="introText">
-            Tech Demo นี้จัดทำขึ้นเพื่อทดสอบขีดความสามารถของ WebGL และความเป็นไปได้ในการพัฒนาต่อยอด<br>
-            โปรดเตรียม Marker ให้พร้อมก่อนเริ่มทดสอบระบบ
-        </div>
-        <div class="introSub">( แตะหน้าจอเพื่อดำเนินการต่อ )</div>
-    </div>
-
-    <div id="landingPage">
+    <div id="landingPage" class="visible">
 
         <div class="contentWrap">
             <section class="landingHero">
@@ -550,8 +520,8 @@
                 <p>Marker 2 · markers/2.png</p>
             </article>
             <article class="markerCard">
-                <img src="markers/3.png" alt="Marker 3 สำหรับโมเดล Camel" loading="lazy">
-                <h3>Camel</h3>
+                <img src="markers/3.png" alt="Marker 3 สำหรับโมเดล test_0" loading="lazy">
+                <h3>test_0</h3>
                 <p>Marker 3 · markers/3.png</p>
             </article>
         </div>
@@ -613,7 +583,6 @@
         const yyyy = d.getFullYear();
         document.getElementById('dateTxt').innerText = `${dd}-${mm}-${yyyy}`;
 
-        const intro = document.getElementById('introScreen');
         const landing = document.getElementById('landingPage');
         const btnStart = document.getElementById('btnStart');
         const btnExplore = document.getElementById('btnExplore');
@@ -632,14 +601,6 @@
             if(show) notFound.classList.add('showMsg');
             else notFound.classList.remove('showMsg');
         };
-
-        intro.addEventListener('click', () => {
-            intro.style.opacity = '0';
-            setTimeout(() => {
-                intro.classList.add('hidden');
-                landing.classList.add('visible');
-            }, 800);
-        });
 
         btnExplore.addEventListener('click', () => window.openModelViewer && window.openModelViewer());
 
@@ -679,10 +640,7 @@
         btnMotion.style.display = 'none';
 
         btnStop.addEventListener('click', () => {
-             if(window.killAR) window.killAR();
-             intro.classList.remove('hidden');
-             requestAnimationFrame(() => { intro.style.opacity = '1'; });
-             setTimeout(() => { location.reload(); }, 1000);
+             location.reload();
         });
     </script>
 
