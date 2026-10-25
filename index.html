@@ -157,8 +157,9 @@
             font-weight: 700; color: #26271f;
         }
         #btnCloseMarkers {
-            flex: 0 0 auto; order: -1; border: 1px solid #cfcbbf; border-radius: 3px;
-            padding: 9px 16px; background: transparent; color: #26271f;
+            position: fixed; top: 16px; left: 16px; z-index: 5;
+            border: 1px solid #cfcbbf; border-radius: 3px;
+            padding: 9px 16px; background: #fffdf8; color: #26271f;
             font: inherit; font-size: 1.25rem; cursor: pointer;
         }
         #btnCloseMarkers:hover { background: #f0eee7; }
@@ -277,11 +278,17 @@
         #viewerCanvas { position: absolute; inset: 0; touch-action: none; }
         #viewerTop {
             position: absolute; top: 0; left: 0; right: 0; z-index: 2;
-            padding: 18px 18px 12px; display: flex; gap: 12px;
-            align-items: center; justify-content: space-between;
+            padding: 16px; display: flex; gap: 12px;
+            align-items: flex-start; justify-content: flex-start;
             background: linear-gradient(#101114eF, #10111400);
         }
         #viewerTop strong { font-weight: 400; letter-spacing: .04em; }
+        #btnViewerClose {
+            width: 44px; height: 44px; display: grid; place-items: center;
+            padding: 0; border-radius: 50%; font-size: 1.5rem; line-height: 1;
+            cursor: pointer; background: #25272dcc; border: 1px solid #ffffff40;
+        }
+        #btnViewerClose:hover { background: #3a3d45; }
         #viewerControls {
             position: absolute; z-index: 2; left: 16px; right: 16px; bottom: 20px;
             display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px;
@@ -560,7 +567,7 @@
     <section id="modelViewer" aria-label="3D model explorer">
         <div id="viewerCanvas"></div>
         <div id="viewerTop">
-            <button id="btnViewerClose" type="button">ปิด ✕</button>
+            <button id="btnViewerClose" type="button" aria-label="ปิด">×</button>
             <span id="viewerStatus" style="display:none" aria-hidden="true"></span>
         </div>
         <div id="viewerControls">
