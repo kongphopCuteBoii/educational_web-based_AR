@@ -149,7 +149,7 @@
         }
         #markerPage.open { display: block; }
         .markerPageHeader {
-            display: flex; align-items: center; justify-content: space-between;
+            display: flex; align-items: center; justify-content: flex-start;
             gap: 16px; max-width: 1080px; margin: 0 auto 12px;
         }
         .markerPageHeader h2 {
@@ -157,7 +157,7 @@
             font-weight: 700; color: #26271f;
         }
         #btnCloseMarkers {
-            flex: 0 0 auto; border: 1px solid #cfcbbf; border-radius: 3px;
+            flex: 0 0 auto; order: -1; border: 1px solid #cfcbbf; border-radius: 3px;
             padding: 9px 16px; background: transparent; color: #26271f;
             font: inherit; font-size: 1.25rem; cursor: pointer;
         }
@@ -492,14 +492,14 @@
 
     <section id="markerPage" aria-labelledby="markerPageTitle">
         <header class="markerPageHeader">
-            <h2 id="markerPageTitle">เปิดดู Marker</h2>
             <button id="btnCloseMarkers" type="button">กลับหน้าหลัก</button>
+            <h2 id="markerPageTitle">เปิดดู Marker</h2>
         </header>
         <p class="markerPageNote">ใช้ภาพ Marker เหล่านี้ส่องผ่านกล้องเพื่อเรียกโมเดล 3D ที่ตรงกัน</p>
         <div class="markerGrid">
             <article class="markerCard">
-                <img src="markers/0.png" alt="Marker 0 สำหรับโมเดล H2O" loading="lazy">
-                <h3>H₂O · Water</h3>
+                <img src="markers/0.png" alt="Marker 0 สำหรับโมเดล H₂O" loading="lazy">
+                <h3>H₂O</h3>
                 <p>Marker 0 · markers/0.png</p>
             </article>
             <article class="markerCard">
@@ -508,14 +508,34 @@
                 <p>Marker 1 · markers/1.png</p>
             </article>
             <article class="markerCard">
-                <img src="markers/2.png" alt="Marker 2 สำหรับโมเดล Sun" loading="lazy">
-                <h3>Sun</h3>
+                <img src="markers/2.png" alt="Marker 2 สำหรับโมเดล Saturn" loading="lazy">
+                <h3>Saturn</h3>
                 <p>Marker 2 · markers/2.png</p>
             </article>
             <article class="markerCard">
-                <img src="markers/3.png" alt="Marker 3 สำหรับโมเดล test_0" loading="lazy">
-                <h3>test_0</h3>
+                <img src="markers/3.png" alt="Marker 3 สำหรับโมเดล Sun" loading="lazy">
+                <h3>Sun</h3>
                 <p>Marker 3 · markers/3.png</p>
+            </article>
+            <article class="markerCard">
+                <img src="markers/4.png" alt="Marker 4 สำหรับโมเดล Camel" loading="lazy">
+                <h3>Camel</h3>
+                <p>Marker 4 · markers/4.png</p>
+            </article>
+            <article class="markerCard">
+                <img src="markers/5.png" alt="Marker 5 สำหรับโมเดล Earth" loading="lazy">
+                <h3>Earth</h3>
+                <p>Marker 5 · markers/5.png</p>
+            </article>
+            <article class="markerCard">
+                <img src="markers/6.png" alt="Marker 6 สำหรับโมเดล Pluto" loading="lazy">
+                <h3>Pluto</h3>
+                <p>Marker 6 · markers/6.png</p>
+            </article>
+            <article class="markerCard">
+                <img src="markers/7.png" alt="Marker 7 สำหรับโมเดล Human Heart" loading="lazy">
+                <h3>Human Heart</h3>
+                <p>Marker 7 · markers/7.png</p>
             </article>
         </div>
     </section>
@@ -545,11 +565,14 @@
         </div>
         <div id="viewerControls">
             <select id="viewerModel" aria-label="เลือกโมเดล">
-                <option value="h2o">H₂O</option>
-                <option value="ar18">AR18</option>
-                <option value="saturn">Saturn</option>
-                <option value="sun">Sun</option>
-                <option value="camel">Camel</option>
+                <option value="0">H₂O</option>
+                <option value="1">Argon</option>
+                <option value="2">Saturn</option>
+                <option value="3">Sun</option>
+                <option value="4">Camel</option>
+                <option value="5">Earth</option>
+                <option value="6">Pluto</option>
+                <option value="7">Human Heart</option>
             </select>
             <button id="viewerReset" type="button">รีเซ็ตมุมมอง</button>
             <button id="viewerZoomOut" type="button" aria-label="ซูมออก">−</button>
